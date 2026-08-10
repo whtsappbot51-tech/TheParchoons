@@ -10,7 +10,8 @@ router.get('/categories', async (req, res) => {
   try {
     const categories = await Category.find({ isActive: true })
       .sort({ sortOrder: 1 })
-      .select('name image emoji sortOrder');
+      .select('name image emoji sortOrder')
+      .lean();
     res.json({ success: true, categories });
   } catch (err) {
     res.status(500).json({ error: 'Failed to load categories.' });
@@ -42,7 +43,8 @@ router.get('/products', async (req, res) => {
     const products = await query
       .populate('category', 'name emoji')
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean();
 
     const total = await Product.countDocuments(filter);
 
@@ -66,7 +68,8 @@ router.get('/products', async (req, res) => {
 router.get('/products/:id', async (req, res) => {
   try {
     const product = await Product.findOne({ _id: req.params.id, isActive: true })
-      .populate('category', 'name emoji');
+      .populate('category', 'name emoji')
+      .lean();
     if (!product) return res.status(404).json({ error: 'Product not found.' });
     res.json({ success: true, product });
   } catch (err) {
@@ -77,7 +80,7 @@ router.get('/products/:id', async (req, res) => {
 // GET /api/banners — active homepage banners
 router.get('/banners', async (req, res) => {
   try {
-    const banners = await Banner.find({ isActive: true }).sort({ sortOrder: 1 });
+    const banners = await Banner.find({ isActive: true }).sort({ sortOrder: 1 }).lean();
     res.json({ success: true, banners });
   } catch (err) {
     res.status(500).json({ error: 'Failed to load banners.' });
@@ -87,7 +90,7 @@ router.get('/banners', async (req, res) => {
 // GET /api/settings/public — public store settings
 router.get('/settings/public', async (req, res) => {
   try {
-    const allSettings = await Settings.find();
+    const allSettings = await Settings.find().lean();
     const settings = {};
     allSettings.forEach(s => {
       settings[s.key] = s.value;

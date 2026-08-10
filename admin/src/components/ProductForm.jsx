@@ -138,11 +138,52 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
     handleVariantChange(index, 'image', '');
   };
 
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const MAX_SIZE = 800; // Resize to max 800px
+          
+          if (width > height && width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          } else if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          }, 'image/jpeg', 0.8); // 80% quality
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const uploadFile = async (file) => {
     if (!file) return '';
     
+    // Compress image instantly in browser before uploading to save massive network time
+    const compressedFile = await compressImage(file);
+    
     const form = new FormData();
-    form.append('image', file);
+    form.append('image', compressedFile);
     
     try {
       const res = await api.post('/admin/upload?type=product', form, {
@@ -165,14 +206,10 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
     setLoading(true);
     setUploading(true);
     try {
-      // 1. Upload main image if new
-      let imageUrl = formData.image;
-      if (imageFile) {
-        imageUrl = await uploadFile(imageFile);
-      }
-
-      // 2. Upload variant images concurrently
-      const uploadedVariants = await Promise.all(
+      // Execute ALL uploads concurrently for maximum speed
+      const mainImagePromise = imageFile ? uploadFile(imageFile) : Promise.resolve(formData.image);
+      
+      const variantPromises = Promise.all(
         formData.variants.map(async (variant, index) => {
           let vImageUrl = variant.image;
           if (variantImageFiles[index]) {
@@ -181,6 +218,8 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
           return { ...variant, image: vImageUrl };
         })
       );
+
+      const [imageUrl, uploadedVariants] = await Promise.all([mainImagePromise, variantPromises]);
 
       const payload = { ...formData, image: imageUrl, variants: uploadedVariants };
 

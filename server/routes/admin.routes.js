@@ -43,7 +43,7 @@ router.get('/dashboard', async (req, res) => {
 // --- CATEGORIES ---
 router.get('/categories', async (req, res) => {
     try {
-        const categories = await Category.find().sort({ sortOrder: 1 });
+        const categories = await Category.find().sort({ sortOrder: 1 }).lean();
         res.json({ success: true, categories });
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch categories.' });
@@ -86,7 +86,7 @@ router.delete('/categories/:id', async (req, res) => {
 // --- PRODUCTS ---
 router.get('/products', async (req, res) => {
     try {
-        const products = await Product.find().populate('category', 'name').sort({ createdAt: -1 });
+        const products = await Product.find().populate('category', 'name').sort({ createdAt: -1 }).lean();
         res.json({ success: true, products });
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch products.' });
@@ -124,7 +124,7 @@ router.delete('/products/:id', async (req, res) => {
 // --- BANNERS ---
 router.get('/banners', async (req, res) => {
     try {
-        const banners = await Banner.find().sort({ sortOrder: 1 });
+        const banners = await Banner.find().sort({ sortOrder: 1 }).lean();
         res.json({ success: true, banners });
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch banners.' });
@@ -162,7 +162,7 @@ router.delete('/banners/:id', async (req, res) => {
 // --- ORDERS ---
 router.get('/orders', async (req, res) => {
     try {
-        const orders = await Order.find().sort({ createdAt: -1 });
+        const orders = await Order.find().sort({ createdAt: -1 }).lean();
         res.json({ success: true, orders });
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch orders.' });
@@ -171,7 +171,7 @@ router.get('/orders', async (req, res) => {
 
 router.get('/orders/:id', async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id);
+        const order = await Order.findById(req.params.id).lean();
         if(!order) return res.status(404).json({error: 'Order not found'});
         res.json({ success: true, order });
     } catch (err) {
@@ -217,7 +217,7 @@ router.put('/orders/:id/status', async (req, res) => {
 // --- CUSTOMERS ---
 router.get('/customers', async (req, res) => {
     try {
-        const customers = await Customer.find().sort({ lastOrderAt: -1 });
+        const customers = await Customer.find().sort({ lastOrderAt: -1 }).lean();
         res.json({ success: true, customers });
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch customers.' });
@@ -227,7 +227,7 @@ router.get('/customers', async (req, res) => {
 // --- SETTINGS ---
 router.get('/settings', async (req, res) => {
     try {
-        const settings = await Settings.find();
+        const settings = await Settings.find().lean();
         res.json({ success: true, settings });
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch settings.' });
