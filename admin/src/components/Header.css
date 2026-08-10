@@ -1,0 +1,45 @@
+.mobile-header {
+  background-color: var(--bg-sidebar);
+  color: white;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.mobile-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 var(--spacing-4);
+}
+
+.mobile-brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.logout-btn-header {
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2);
+  transition: opacity 0.2s;
+}
+
+.logout-btn-header:hover {
+  opacity: 0.8;
+}
+
+/* Hide header on desktop */
+@media (min-width: 768px) {
+  .mobile-header {
+    display: none;
+  }
+}

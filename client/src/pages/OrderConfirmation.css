@@ -1,0 +1,55 @@
+.confirmation-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 140px);
+  padding: var(--spacing-4);
+  background-color: var(--bg-body);
+}
+
+.confirmation-content {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-8) var(--spacing-4);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 400px;
+}
+
+.success-icon {
+  color: var(--success);
+  margin: 0 auto;
+}
+
+.order-id-box {
+  background-color: var(--bg-input);
+  padding: var(--spacing-3);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-color);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.btn-whatsapp {
+  background-color: #25D366; /* WhatsApp brand color */
+  color: white;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  text-align: center;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+}
+
+.btn-whatsapp:hover {
+  opacity: 0.9;
+}

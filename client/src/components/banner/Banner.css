@@ -1,0 +1,48 @@
+.banner-container {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-4);
+  background-color: var(--bg-input);
+}
+
+.banner-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.banner-slide {
+  min-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.banner-image {
+  width: 100%;
+  aspect-ratio: 21 / 9; /* Common mobile banner ratio */
+  object-fit: cover;
+}
+
+.banner-indicators {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+
+.indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s;
+}
+
+.indicator.active {
+  width: 16px;
+  border-radius: 4px;
+  background-color: white;
+}
