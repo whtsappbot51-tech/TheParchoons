@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Megaphone, Type, Store, Save, Check, Loader2 } from 'lucide-react';
 import api from '../api';
 import './Settings.css';
@@ -68,7 +68,31 @@ const Settings = () => {
     fetchSettings();
   }, []);
 
-  // --- Save helpers ---
+  // --- Quick-save a single toggle instantly ---
+  const quickSaveToggle = useCallback(async (key, value) => {
+    try {
+      await api.put('/admin/settings', {
+        settings: [{ key, value: value ? 'true' : 'false' }]
+      });
+    } catch (err) {
+      console.error('Failed to save toggle', err);
+    }
+  }, []);
+
+  // --- Toggle handlers that auto-save ---
+  const handlePopupToggle = (e) => {
+    const newVal = e.target.checked;
+    setPopupEnabled(newVal);
+    quickSaveToggle('POPUP_ENABLED', newVal);
+  };
+
+  const handleMarqueeToggle = (e) => {
+    const newVal = e.target.checked;
+    setMarqueeEnabled(newVal);
+    quickSaveToggle('MARQUEE_ENABLED', newVal);
+  };
+
+  // --- Save helpers for content fields ---
   const saveSettings = async (settingsArray, setSaving, setSaved) => {
     setSaving(true);
     setSaved(false);
@@ -85,7 +109,6 @@ const Settings = () => {
 
   const handleSavePopup = () => {
     saveSettings([
-      { key: 'POPUP_ENABLED', value: popupEnabled ? 'true' : 'false' },
       { key: 'POPUP_TITLE', value: popupTitle },
       { key: 'POPUP_MESSAGE', value: popupMessage },
       { key: 'POPUP_IMAGE', value: popupImage },
@@ -95,7 +118,6 @@ const Settings = () => {
 
   const handleSaveMarquee = () => {
     saveSettings([
-      { key: 'MARQUEE_ENABLED', value: marqueeEnabled ? 'true' : 'false' },
       { key: 'MARQUEE_TEXT', value: marqueeText },
       { key: 'MARQUEE_COLOR', value: marqueeColor },
     ], setMarqueeSaving, setMarqueeSaved);
@@ -143,7 +165,7 @@ const Settings = () => {
             <input
               type="checkbox"
               checked={popupEnabled}
-              onChange={(e) => setPopupEnabled(e.target.checked)}
+              onChange={handlePopupToggle}
             />
             <span className="toggle-slider"></span>
           </label>
@@ -210,7 +232,7 @@ const Settings = () => {
             <input
               type="checkbox"
               checked={marqueeEnabled}
-              onChange={(e) => setMarqueeEnabled(e.target.checked)}
+              onChange={handleMarqueeToggle}
             />
             <span className="toggle-slider"></span>
           </label>
