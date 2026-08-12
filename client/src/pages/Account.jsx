@@ -112,16 +112,7 @@ const Account = () => {
           )}
         </div>
 
-        {/* Quick Links */}
-        <div className="account-links">
-          <button className="account-link-btn" onClick={() => navigate('/orders')}>
-            <div className="flex items-center gap-3">
-              <Package size={20} className="text-secondary" />
-              <span className="font-bold">My Orders</span>
-            </div>
-            <span className="text-muted">➔</span>
-          </button>
-        </div>
+
 
         {/* Store Info */}
         <div className="store-info-card mt-6 text-center">

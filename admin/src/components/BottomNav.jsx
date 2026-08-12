@@ -5,9 +5,9 @@ import './BottomNav.css';
 const BottomNav = () => {
   const navItems = [
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/orders', label: 'Orders', icon: ShoppingCart },
     { path: '/products', label: 'Products', icon: ShoppingBag },
     { path: '/categories', label: 'Categories', icon: Layers },
+    { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
   return (

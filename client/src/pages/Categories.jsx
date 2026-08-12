@@ -35,8 +35,8 @@ const Categories = () => {
       </div>
 
       <div className="px-4 py-4">
-        {loading ? (
-          <div className="loading-state">Loading categories...</div>
+        {categories.length === 0 && !loading ? (
+          <div className="empty-state">No categories found.</div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
             {categories.map(cat => (

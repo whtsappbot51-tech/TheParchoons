@@ -45,9 +45,7 @@ const Category = () => {
         <div style={{ width: 24 }}></div> {/* Spacer for flex balance */}
       </div>
 
-      {loading ? (
-        <div className="loading-state">Loading...</div>
-      ) : products.length === 0 ? (
+      {products.length === 0 && !loading ? (
         <div className="empty-state">
           <p>No products found in this category.</p>
         </div>

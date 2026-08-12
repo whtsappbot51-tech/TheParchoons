@@ -35,7 +35,7 @@ const Dashboard = () => {
     { title: 'Total Customers', value: stats.totalCustomers, icon: Users, color: 'text-info', bg: 'bg-sky-100' },
   ];
 
-  if (loading) return <div>Loading dashboard...</div>;
+
 
   return (
     <div>

@@ -1,0 +1,35 @@
+.marquee-banner {
+  position: fixed;
+  top: 60px; /* Right below the 60px fixed header */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0.4rem 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.02em;
+  z-index: 49;
+}
+
+.marquee-banner-inner {
+  display: inline-block;
+  animation: marquee-scroll 18s linear infinite;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-banner-inner span {
+  display: inline-block;
+  padding: 0 3rem;
+}

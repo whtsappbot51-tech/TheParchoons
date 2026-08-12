@@ -1,0 +1,113 @@
+.promo-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: popup-fade-in 0.3s ease;
+}
+
+@keyframes popup-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.promo-popup-card {
+  background: white;
+  border-radius: 16px;
+  max-width: 380px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: popup-scale-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+@keyframes popup-scale-in {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.promo-popup-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s;
+}
+
+.promo-popup-close:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.promo-popup-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.promo-popup-body {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.promo-popup-body h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 0 0 0.75rem 0;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.promo-popup-body p {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0 0 1.25rem 0;
+  line-height: 1.5;
+}
+
+.promo-popup-cta {
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.promo-popup-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+.promo-popup-cta:active {
+  transform: translateY(0);
+}

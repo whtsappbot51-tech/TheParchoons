@@ -36,9 +36,7 @@ const Home = () => {
     fetchHomeData();
   }, []);
 
-  if (loading) {
-    return <div className="loading-state">Loading TheParchoons...</div>;
-  }
+
 
   return (
     <div className="home-page">

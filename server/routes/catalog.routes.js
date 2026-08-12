@@ -110,6 +110,16 @@ router.get('/settings/public', async (req, res) => {
         announcement: settings.ANNOUNCEMENT || '',
         storeLat: parseFloat(settings.STORE_LATITUDE) || 0,
         storeLon: parseFloat(settings.STORE_LONGITUDE) || 0,
+        // Promotional Popup
+        popupEnabled: settings.POPUP_ENABLED === 'true',
+        popupTitle: settings.POPUP_TITLE || '',
+        popupMessage: settings.POPUP_MESSAGE || '',
+        popupImage: settings.POPUP_IMAGE || '',
+        popupButtonText: settings.POPUP_BUTTON_TEXT || 'Shop Now',
+        // Running Marquee
+        marqueeEnabled: settings.MARQUEE_ENABLED === 'true',
+        marqueeText: settings.MARQUEE_TEXT || '',
+        marqueeColor: settings.MARQUEE_COLOR || 'green',
       },
     });
   } catch (err) {

@@ -13,6 +13,8 @@ import OrderConfirmation from './pages/OrderConfirmation';
 import Orders from './pages/Orders';
 import Account from './pages/Account';
 import Search from './pages/Search';
+import PromoPopup from './components/promo/PromoPopup';
+import MarqueeBanner from './components/promo/MarqueeBanner';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
       <BrowserRouter>
         <div className="app-container">
           <Header />
+          <MarqueeBanner />
+          <PromoPopup />
           <main className="page-content">
             <Routes>
               <Route path="/" element={<Home />} />

@@ -12,7 +12,6 @@ const BottomNav = () => {
     { path: '/', label: 'Home', icon: Home },
     { path: '/categories', label: 'Categories', icon: Grid },
     { path: '/cart', label: 'Cart', icon: ShoppingCart, count: cartCount },
-    { path: '/orders', label: 'Orders', icon: Clock },
     { path: '/account', label: 'Account', icon: User },
   ];
 

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ShoppingCart, ShoppingBag, LogOut, Layers } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, ShoppingBag, LogOut, Layers, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
@@ -8,9 +8,9 @@ const Sidebar = () => {
 
   const navItems = [
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/orders', label: 'Orders', icon: ShoppingCart },
     { path: '/products', label: 'Products', icon: ShoppingBag },
     { path: '/categories', label: 'Categories', icon: Layers },
+    { path: '/settings', label: 'Settings', icon: Settings },
   ];
 
   return (

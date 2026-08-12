@@ -21,23 +21,19 @@ const OrderConfirmation = () => {
         </div>
 
         <div className="action-buttons">
-          <button className="btn-primary" onClick={() => navigate('/orders')}>
-            <Package size={18} />
-            Track Order
-          </button>
+          <p className="text-muted mb-4">You will receive the details on WhatsApp.</p>
           
-          <button className="btn-outline" onClick={() => navigate('/')}>
-            Continue Shopping
-          </button>
-
-          <a 
-            href="https://wa.me/919999999999?text=Hi, I have a query regarding my order: ${orderId}"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-whatsapp"
+          <button 
+            className="btn-primary" 
+            onClick={() => {
+              if (window.close) {
+                window.close();
+              }
+              window.location.href = 'https://wa.me/';
+            }}
           >
-            Chat on WhatsApp
-          </a>
+            Return to WhatsApp
+          </button>
         </div>
       </div>
     </div>

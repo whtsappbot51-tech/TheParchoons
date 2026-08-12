@@ -58,7 +58,7 @@ const Products = () => {
     }
   };
 
-  if (loading) return <div>Loading products...</div>;
+
 
   return (
     <div>
