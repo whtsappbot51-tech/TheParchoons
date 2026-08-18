@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import './OrderConfirmation.css';
@@ -7,6 +8,15 @@ const STORE_URL = 'https://the-parchoons.vercel.app';
 
 const OrderConfirmation = () => {
   const { orderId } = useParams();
+
+  useEffect(() => {
+    // Automatically redirect back to WhatsApp after a short delay
+    const timer = setTimeout(() => {
+      window.location.href = `https://wa.me/${BOT_NUMBER}?text=${encodeURIComponent('Hi! I just placed an order on TheParchoons. My Order ID is: ' + orderId)}`;
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [orderId]);
 
   return (
     <div className="confirmation-page">
@@ -23,7 +33,7 @@ const OrderConfirmation = () => {
         </div>
 
         <div className="action-buttons">
-          <p className="text-muted mb-4">You will receive the details on WhatsApp.</p>
+          <p className="text-muted mb-4">Redirecting you back to WhatsApp in a moment...</p>
           
           <a 
             href={`https://wa.me/${BOT_NUMBER}?text=${encodeURIComponent('Hi! I just placed an order on TheParchoons. My Order ID is: ' + orderId)}`}
