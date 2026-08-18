@@ -155,29 +155,36 @@ router.post('/orders', async (req, res) => {
             if (ownerPhone) {
                 const mapsLink = (customerLat && customerLon) ? `https://maps.google.com/?q=${customerLat},${customerLon}` : 'Not provided';
                 
-                let ownerMsg = `🛒 *NEW ORDER RECEIVED*\n\n`;
-                ownerMsg += `*Order ID:* ${orderId}\n`;
-                ownerMsg += `*Customer:* ${name}\n`;
-                ownerMsg += `*Phone:* ${phone}\n`;
-                ownerMsg += `*Address:* ${address}\n`;
-                ownerMsg += `*Location:* ${mapsLink}\n`;
+                let ownerMsg = `📦 *NEW ORDER RECEIVED!* 🔔\n`;
+                ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                ownerMsg += `🆔 *Order ID:* ${orderId}\n`;
+                ownerMsg += `👤 *Customer:* ${name}\n`;
+                ownerMsg += `📞 *Phone:* ${phone}\n`;
+                ownerMsg += `📍 *Address:* ${address}\n`;
+                ownerMsg += `🗺️ *Location:* ${mapsLink}\n`;
                 if(distanceFromStore !== null) {
-                    ownerMsg += `*Distance:* ${distanceFromStore} meters\n`;
+                    ownerMsg += `📏 *Distance:* ${distanceFromStore} meters\n`;
                 }
-                ownerMsg += `\n*Items:*\n${itemsText}\n`;
-                ownerMsg += `*Subtotal:* ₹${subtotal}\n`;
-                ownerMsg += `*Delivery Fee:* ₹${deliveryFee}\n`;
-                ownerMsg += `*Total:* ₹${total} (COD)\n`;
+                ownerMsg += `\n🛍️ *Items Ordered:*\n${itemsText}\n`;
+                ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
+                ownerMsg += `💰 *Subtotal:* ₹${subtotal}\n`;
+                ownerMsg += `🚚 *Delivery Fee:* ₹${deliveryFee}\n`;
+                ownerMsg += `✅ *Total:* ₹${total} (COD)\n`;
+                ownerMsg += `━━━━━━━━━━━━━━━━━━━━`;
 
                 await whatsappService.sendText(ownerPhone, ownerMsg);
             }
 
             // Customer confirmation
-            let customerMsg = `🎉 *Thank you for your order, ${name}!*\n\n`;
-            customerMsg += `Your order *${orderId}* has been placed successfully.\n\n`;
-            customerMsg += `*Total Amount:* ₹${total} (Cash on Delivery)\n\n`;
-            customerMsg += `Our team will contact you shortly regarding delivery.\n`;
-            customerMsg += `- TheParchoons`;
+            let customerMsg = `✅ *Order Confirmed!*\n\n`;
+            customerMsg += `Hey ${name}! 👋\n`;
+            customerMsg += `Thank you for shopping with *TheParchoons* 💚\n\n`;
+            customerMsg += `🆔 *Order ID:* ${orderId}\n`;
+            customerMsg += `💰 *Total:* ₹${total} (Cash on Delivery)\n\n`;
+            customerMsg += `📦 Your order is being prepared and our delivery partner will reach you soon! 🚀\n\n`;
+            if (ownerPhone) {
+                customerMsg += `📞 *For any queries contact:* +${ownerPhone}`;
+            }
 
             await whatsappService.sendText(phone, customerMsg);
 

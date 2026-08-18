@@ -65,15 +65,15 @@ router.post('/webhook', async (req, res) => {
           type: 'cta_url',
           header: {
             type: 'text',
-            text: 'Welcome to TheParchoons! 🛒'
+            text: '🎉 Welcome to TheParchoons! 🛒'
           },
           body: {
-            text: 'Browse our store and place your order directly. We deliver fresh groceries right to your doorstep!'
+            text: 'Hey there! 👋\n\n🥦 Fresh vegetables\n🍚 Premium groceries\n🚚 Fast doorstep delivery\n\nTap below to start shopping 👇'
           },
           action: {
             name: 'cta_url',
             parameters: {
-              display_text: 'Open Store',
+              display_text: '🛍️ Shop Now',
               url: 'https://the-parchoons.vercel.app'
             }
           }
