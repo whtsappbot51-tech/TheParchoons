@@ -10,12 +10,8 @@ const OrderConfirmation = () => {
   const { orderId } = useParams();
   const [countdown, setCountdown] = useState(3);
 
-  const whatsappMessage = encodeURIComponent(
-    'Hi! I just placed an order on TheParchoons. My Order ID is: ' + orderId
-  );
-
-  // Deep link that opens WhatsApp app directly (works on mobile)
-  const whatsappDeepLink = `https://api.whatsapp.com/send?phone=${BOT_NUMBER}&text=${whatsappMessage}`;
+  // Deep link that opens WhatsApp chat directly (no pre-filled message)
+  const whatsappDeepLink = `https://api.whatsapp.com/send?phone=${BOT_NUMBER}`;
 
   useEffect(() => {
     // Countdown timer
