@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 import './OrderConfirmation.css';
@@ -8,15 +8,31 @@ const STORE_URL = 'https://the-parchoons.vercel.app';
 
 const OrderConfirmation = () => {
   const { orderId } = useParams();
+  const [countdown, setCountdown] = useState(3);
+
+  const whatsappMessage = encodeURIComponent(
+    'Hi! I just placed an order on TheParchoons. My Order ID is: ' + orderId
+  );
+
+  // Deep link that opens WhatsApp app directly (works on mobile)
+  const whatsappDeepLink = `https://api.whatsapp.com/send?phone=${BOT_NUMBER}&text=${whatsappMessage}`;
 
   useEffect(() => {
-    // Automatically redirect back to WhatsApp after a short delay
-    const timer = setTimeout(() => {
-      window.location.href = `https://wa.me/${BOT_NUMBER}?text=${encodeURIComponent('Hi! I just placed an order on TheParchoons. My Order ID is: ' + orderId)}`;
-    }, 3000);
+    // Countdown timer
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          // Redirect using api.whatsapp.com which works better for programmatic navigation
+          window.location.replace(whatsappDeepLink);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [orderId]);
+    return () => clearInterval(interval);
+  }, [whatsappDeepLink]);
 
   return (
     <div className="confirmation-page">
@@ -33,11 +49,12 @@ const OrderConfirmation = () => {
         </div>
 
         <div className="action-buttons">
-          <p className="text-muted mb-4">Redirecting you back to WhatsApp in a moment...</p>
+          <p className="text-muted mb-4">
+            Redirecting to WhatsApp in {countdown}...
+          </p>
           
           <a 
-            href={`https://wa.me/${BOT_NUMBER}?text=${encodeURIComponent('Hi! I just placed an order on TheParchoons. My Order ID is: ' + orderId)}`}
-            target="_blank" 
+            href={whatsappDeepLink}
             rel="noopener noreferrer"
             className="btn-whatsapp"
           >
