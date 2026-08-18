@@ -21,16 +21,15 @@ router.get('/webhook', (req, res) => {
   return res.sendStatus(400);
 });
 
-// Send a WhatsApp text message via Meta Cloud API
-const sendWhatsAppMessage = async (to, text) => {
+// Send a WhatsApp message via Meta Cloud API
+const sendWhatsAppMessage = async (to, messagePayload) => {
   try {
     await axios.post(
       `https://graph.facebook.com/v21.0/${config.whatsapp.phoneNumberId}/messages`,
       {
         messaging_product: 'whatsapp',
         to,
-        type: 'text',
-        text: { body: text },
+        ...messagePayload,
       },
       {
         headers: {
@@ -59,9 +58,28 @@ router.post('/webhook', async (req, res) => {
       const from = message.from;
       console.log(`Received WhatsApp message from ${from}: ${message.text?.body || '[media]'}`);
 
-      // Auto-reply with store link
-      const replyText = `Welcome to TheParchoons! Browse our store and place your order here:\nhttps://the-parchoons.vercel.app\n\nWe deliver fresh groceries right to your doorstep!`;
-      await sendWhatsAppMessage(from, replyText);
+      // Auto-reply with interactive store link button
+      const interactivePayload = {
+        type: 'interactive',
+        interactive: {
+          type: 'cta_url',
+          header: {
+            type: 'text',
+            text: 'Welcome to TheParchoons! 🛒'
+          },
+          body: {
+            text: 'Browse our store and place your order directly. We deliver fresh groceries right to your doorstep!'
+          },
+          action: {
+            name: 'cta_url',
+            parameters: {
+              display_text: 'Open Store',
+              url: 'https://the-parchoons.vercel.app'
+            }
+          }
+        }
+      };
+      await sendWhatsAppMessage(from, interactivePayload);
     }
     
     // Meta expects a 200 OK to acknowledge receipt
