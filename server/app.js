@@ -37,6 +37,7 @@ if (config.nodeEnv === 'development') {
 }
 
 // --- API Routes ---
+app.get('/ping', (req, res) => res.status(200).send('pong')); // For UptimeRobot
 app.use('/api/auth', authRoutes);
 app.use('/api', catalogRoutes);
 app.use('/api', orderRoutes);

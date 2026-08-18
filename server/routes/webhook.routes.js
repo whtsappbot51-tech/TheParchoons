@@ -74,7 +74,7 @@ router.post('/webhook', async (req, res) => {
             name: 'cta_url',
             parameters: {
               display_text: '🛍️ Shop Now',
-              url: 'https://the-parchoons.vercel.app'
+              url: 'https://theparchoons.store'
             }
           }
         }
