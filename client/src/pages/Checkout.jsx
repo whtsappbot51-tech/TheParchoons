@@ -13,12 +13,12 @@ const Checkout = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Protect route
+  // Protect route — but don't redirect if we're submitting (order in flight)
   useEffect(() => {
-    if (cart.length === 0) {
+    if (cart.length === 0 && !submitting) {
       navigate('/cart', { replace: true });
     }
-  }, [cart, navigate]);
+  }, [cart, navigate, submitting]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -86,8 +86,9 @@ const Checkout = () => {
       const res = await api.post('/orders', payload);
       
       if (res.data.success) {
-        clearCart();
+        // Navigate FIRST, then clear the cart so the useEffect guard doesn't kick in
         navigate(`/order-confirmation/${res.data.order.orderId}`, { replace: true });
+        clearCart();
       }
     } catch (err) {
       console.error('Order submission failed', err);
@@ -96,7 +97,7 @@ const Checkout = () => {
     }
   };
 
-  if (cart.length === 0) return null;
+  if (cart.length === 0 && !submitting) return null;
 
   return (
     <div className="checkout-page">
