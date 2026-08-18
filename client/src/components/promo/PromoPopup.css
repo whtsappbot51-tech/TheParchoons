@@ -93,19 +93,20 @@
 .promo-popup-cta {
   width: 100%;
   padding: 0.85rem 1.5rem;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  background: var(--primary-gradient);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-green);
 }
 
 .promo-popup-cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 15px rgba(12, 131, 31, 0.35);
 }
 
 .promo-popup-cta:active {

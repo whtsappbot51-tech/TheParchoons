@@ -1,6 +1,8 @@
+/* ===== Orders Page ===== */
 .orders-page {
   display: flex;
   flex-direction: column;
+  animation: fadeIn 0.3s var(--ease-out);
 }
 
 .orders-header {
@@ -12,30 +14,42 @@
   position: sticky;
   top: 60px;
   z-index: 40;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
+/* ===== Track Form ===== */
 .track-form {
   background-color: var(--bg-card);
-  padding: var(--spacing-4);
+  padding: var(--spacing-5);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-card);
 }
 
+/* ===== Order Details Card ===== */
 .order-details-card {
   background-color: var(--bg-card);
-  padding: var(--spacing-4);
+  padding: var(--spacing-5);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-card);
+  animation: fadeInUp 0.4s var(--ease-out);
+  margin-top: var(--spacing-4);
 }
 
+.order-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* ===== Status Banner ===== */
 .status-banner {
   display: flex;
   align-items: center;
   gap: var(--spacing-3);
-  background-color: var(--bg-input);
-  padding: var(--spacing-3);
-  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary-light), #c8e6c9);
+  padding: 14px var(--spacing-4);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--primary);
 }
 
 .status-text-container {
@@ -43,22 +57,19 @@
   flex-direction: column;
 }
 
+/* ===== Order Items ===== */
 .order-item-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-2) 0;
-  border-bottom: 1px dashed var(--border-color);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .order-item-row:last-child {
   border-bottom: none;
 }
 
-.border-b {
-  border-bottom: 1px solid var(--border-color);
-}
-
-.pb-3 { padding-bottom: var(--spacing-3); }
+/* ===== Utilities ===== */
+.border-b { border-bottom: 1px solid var(--border-color); }
 .mb-3 { margin-bottom: var(--spacing-3); }
-.pt-3 { padding-top: var(--spacing-3); }

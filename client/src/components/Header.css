@@ -6,13 +6,13 @@
   width: 100%;
   max-width: 480px;
   height: 60px;
-  background-color: #0f172a;
+  background: var(--primary-gradient);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--spacing-4);
-  box-shadow: var(--shadow-sm);
   z-index: 50;
+  box-shadow: 0 2px 16px rgba(12, 131, 31, 0.2);
 }
 
 .header-left, .header-right {
@@ -22,16 +22,27 @@
 }
 
 .icon-btn {
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.icon-btn:active {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(0.92);
 }
 
 .brand-name {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
   color: white;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .cart-icon-wrapper {
@@ -40,21 +51,32 @@
   align-items: center;
   justify-content: center;
   color: white;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.cart-icon-wrapper:active {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(0.92);
 }
 
 .cart-badge {
   position: absolute;
-  top: -8px;
-  right: -8px;
-  background-color: var(--danger);
+  top: -2px;
+  right: -4px;
+  background: #ff3b30;
   color: white;
-  font-size: 0.75rem;
-  font-weight: 700;
-  min-width: 20px;
-  height: 20px;
-  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
+  box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4);
+  animation: bounceIn 0.35s var(--ease-spring);
 }

@@ -5,14 +5,17 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: 480px;
-  height: 65px;
-  background-color: var(--bg-card);
+  height: 68px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  box-shadow: var(--shadow-up);
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.06);
   z-index: 50;
-  padding-bottom: env(safe-area-inset-bottom); /* For iPhone notch */
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .nav-item {
@@ -20,14 +23,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  width: 20%;
-  gap: 2px;
-  transition: color 0.2s;
+  color: var(--text-light);
+  width: 22%;
+  gap: 3px;
+  transition: color var(--transition-fast);
+  position: relative;
+  padding: 6px 0;
 }
 
 .nav-item.active {
   color: var(--primary);
+}
+
+.nav-item.active .icon-container {
+  background: var(--primary-light);
+  border-radius: var(--radius-full);
+  padding: 6px 16px;
 }
 
 .icon-container {
@@ -35,26 +46,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all var(--transition-normal);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
 }
 
 .nav-label {
-  font-size: 0.65rem;
-  font-weight: 500;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: color var(--transition-fast);
+}
+
+.nav-item.active .nav-label {
+  color: var(--primary);
+  font-weight: 700;
 }
 
 .nav-badge {
   position: absolute;
-  top: -6px;
-  right: -10px;
-  background-color: var(--danger);
+  top: 0px;
+  right: 4px;
+  background: #ff3b30;
   color: white;
-  font-size: 0.65rem;
-  font-weight: 700;
+  font-size: 0.6rem;
+  font-weight: 800;
   min-width: 16px;
   height: 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 4px;
+  box-shadow: 0 2px 6px rgba(255, 59, 48, 0.3);
 }

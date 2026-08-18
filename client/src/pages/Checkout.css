@@ -1,7 +1,9 @@
+/* ===== Checkout Page ===== */
 .checkout-page {
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 60px);
+  animation: fadeIn 0.3s var(--ease-out);
 }
 
 .checkout-header {
@@ -13,78 +15,86 @@
   position: sticky;
   top: 60px;
   z-index: 40;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
+/* ===== Form ===== */
 .checkout-form {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-4);
-  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-5);
+  box-shadow: var(--shadow-card);
 }
 
 .form-group {
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-5);
 }
 
 .form-group label {
   display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: var(--spacing-2);
-  color: var(--text-main);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
 }
 
+/* ===== Error Banner ===== */
 .error-banner {
   background-color: #fee2e2;
   color: var(--danger);
-  padding: var(--spacing-3);
+  padding: 12px var(--spacing-4);
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.88rem;
+  font-weight: 600;
   text-align: center;
+  border-left: 4px solid var(--danger);
+  animation: fadeInUp 0.3s var(--ease-out);
 }
 
+/* ===== Location ===== */
 .location-success {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
   color: var(--success);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  background-color: var(--primary-light);
-  padding: var(--spacing-3);
+  background-color: #e8f5e9;
+  padding: 12px var(--spacing-4);
   border-radius: var(--radius-md);
+  border-left: 4px solid var(--success);
+  animation: fadeInUp 0.3s var(--ease-out);
 }
 
-.w-full {
-  width: 100%;
-}
+.w-full { width: 100%; }
 
+/* ===== Spinner ===== */
 .spin {
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
+/* ===== Payment ===== */
 .payment-option {
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-3);
-  padding: var(--spacing-3);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  padding: 14px var(--spacing-4);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .payment-option.selected {
   border-color: var(--primary);
   background-color: var(--primary-light);
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .payment-option input[type="radio"] {
   margin-top: 4px;
+  accent-color: var(--primary);
+  width: 18px;
+  height: 18px;
 }

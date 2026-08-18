@@ -1,6 +1,8 @@
+/* ===== Category Page ===== */
 .category-page {
   display: flex;
   flex-direction: column;
+  animation: fadeIn 0.3s var(--ease-out);
 }
 
 .category-header {
@@ -10,24 +12,19 @@
   padding: var(--spacing-4);
   background-color: var(--bg-card);
   position: sticky;
-  top: 60px; /* Below header */
+  top: 60px;
   z-index: 40;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 
-.back-btn {
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+/* ===== Product List Grid ===== */
 .product-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-3);
 }
 
+/* ===== Empty State ===== */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -37,4 +34,5 @@
   padding: var(--spacing-8);
   text-align: center;
   color: var(--text-muted);
+  font-weight: 500;
 }

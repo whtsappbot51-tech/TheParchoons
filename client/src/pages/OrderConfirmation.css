@@ -1,3 +1,4 @@
+/* ===== Order Confirmation ===== */
 .confirmation-page {
   display: flex;
   flex-direction: column;
@@ -5,52 +6,61 @@
   justify-content: center;
   min-height: calc(100vh - 140px);
   padding: var(--spacing-4);
-  background-color: var(--bg-body);
+  background: linear-gradient(180deg, #e8f5e9 0%, var(--bg-body) 60%);
 }
 
 .confirmation-content {
   background-color: var(--bg-card);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-8) var(--spacing-4);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-8) var(--spacing-5);
   text-align: center;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
+  animation: scaleIn 0.5s var(--ease-spring);
 }
 
 .success-icon {
   color: var(--success);
   margin: 0 auto;
+  animation: bounceIn 0.6s var(--ease-spring) 0.2s both;
 }
 
 .order-id-box {
-  background-color: var(--bg-input);
-  padding: var(--spacing-3);
-  border-radius: var(--radius-md);
-  border: 1px dashed var(--border-color);
+  background: linear-gradient(135deg, var(--primary-light), #c8e6c9);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--primary);
 }
 
 .action-buttons {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--spacing-3);
 }
 
+/* ===== WhatsApp Button ===== */
 .btn-whatsapp {
-  background-color: #25D366; /* WhatsApp brand color */
+  background: linear-gradient(135deg, #25D366, #128C7E);
   color: white;
-  padding: var(--spacing-3) var(--spacing-4);
-  border-radius: var(--radius-md);
-  font-weight: 600;
+  padding: 14px var(--spacing-5);
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: 0.95rem;
   text-align: center;
   text-decoration: none;
-  transition: opacity 0.2s;
+  transition: all var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+  width: 100%;
+  max-width: 300px;
 }
 
-.btn-whatsapp:hover {
-  opacity: 0.9;
+.btn-whatsapp:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.4);
 }
