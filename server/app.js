@@ -27,16 +27,9 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
 
-// CORS — locked to allowed origins
+// CORS — relaxed to allow frontend to connect without strict environment configuration
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, server-to-server)
-    if (!origin) return callback(null, true);
-    if (config.allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error('Not allowed by CORS'));
-  },
+  origin: true, // Allow any origin to connect
   credentials: true,
 }));
 
