@@ -17,7 +17,7 @@
     box-shadow: var(--shadow-md);
   }
 }
-
+  
 .product-card:active {
   transform: scale(0.96);
 }
@@ -26,7 +26,7 @@
 .product-image-container {
   position: relative;
   width: 100%;
-  padding-top: 75%; /* shorter rectangle instead of square */
+  padding-top: 100%; /* Perfect square */
   background-color: var(--bg-input);
   overflow: hidden;
 }

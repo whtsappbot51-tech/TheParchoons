@@ -313,6 +313,7 @@ img {
 .p-2 { padding: var(--spacing-2); }
 .p-4 { padding: var(--spacing-4); }
 .px-4 { padding-left: var(--spacing-4); padding-right: var(--spacing-4); }
+.px-5 { padding-left: 20px; padding-right: 20px; }
 .py-4 { padding-top: var(--spacing-4); padding-bottom: var(--spacing-4); }
 .pt-4 { padding-top: var(--spacing-4); }
 .pt-3 { padding-top: var(--spacing-3); }

@@ -94,8 +94,8 @@
   scroll-snap-type: x mandatory;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  gap: 10px;
-  padding: 0 16px 12px 16px; /* breathing room from left/right walls */
+  gap: 12px;
+  padding: 0 0 16px 0;
 }
 
 .horizontal-scroll::-webkit-scrollbar { 
@@ -103,15 +103,24 @@
 }
 
 .product-scroll-item {
-  flex: 0 0 120px; /* tight width like Blinkit/Zepto */
+  flex: 0 0 140px; /* Slightly wider cards */
   scroll-snap-align: start;
+}
+
+/* Bulletproof spacing for scroll-snap containers */
+.product-scroll-item:first-child {
+  margin-left: 20px;
+}
+
+.product-scroll-item:last-child {
+  margin-right: 20px;
 }
 
 /* ===== Product Grid ===== */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: var(--spacing-3) var(--spacing-2);
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--spacing-4) var(--spacing-3);
 }
 
 /* ===== Featured Section ===== */

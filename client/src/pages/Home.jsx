@@ -7,7 +7,7 @@ import ProductCard from '../components/product/ProductCard';
 import { Search, ChevronRight } from 'lucide-react';
 import './Home.css';
 
-const SEARCH_TERMS = ['atta', 'dal', 'mustard oil', 'milk', 'basmati rice', 'bread', 'sugar', 'paneer', 'maggi', 'tea', 'biscuits', 'onions', 'tomatoes', 'salt'];
+const SEARCH_TERMS = ['atta', 'dal', 'mustard oil', 'milk', 'basmati rice', 'bread', 'sugar', 'paneer', 'maggi', 'tea', 'biscuits', 'salt'];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -87,7 +87,7 @@ const Home = () => {
   return (
     <div className="home-page">
       {/* Search Bar - redirects to a full search page */}
-      <div className="search-container p-4 animate-fade-in">
+      <div className="search-container px-5 py-3 animate-fade-in">
         <div className="search-bar" onClick={() => navigate('/search')} style={{ cursor: 'text' }}>
           <Search size={20} className="text-muted" />
           <input 
@@ -100,18 +100,18 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="px-4 animate-fade-in">
+      <div className="px-5 animate-fade-in">
         <Banner banners={banners} />
       </div>
 
       <section className="section mt-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-        <div className="section-header px-4">
+        <div className="section-header px-5">
           <h2 className="text-h2">Shop by Category</h2>
           <Link to="/categories" className="view-all-link">
             More <ChevronRight size={16} />
           </Link>
         </div>
-        <div className="category-grid-compact px-4">
+        <div className="category-grid-compact px-5">
           {topCategories.map(cat => (
             <CategoryCard key={cat._id} category={cat} />
           ))}
@@ -119,7 +119,7 @@ const Home = () => {
       </section>
 
       <section className="section mt-6 pb-2 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-        <div className="section-header px-4">
+        <div className="section-header px-5">
           <h2 className="text-h2">Popular Near You</h2>
         </div>
         <div className="horizontal-scroll">
@@ -133,7 +133,7 @@ const Home = () => {
 
       {todaysOffers.length > 0 && (
         <section className="section bg-light py-4 mt-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-          <div className="section-header px-4">
+          <div className="section-header px-5">
             <h2 className="text-h2">Today's Offers 🔥</h2>
           </div>
           <div className="horizontal-scroll">
@@ -146,7 +146,7 @@ const Home = () => {
         </section>
       )}
 
-      <section className="section px-4 mt-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+      <section className="section px-5 mt-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
         <div className="section-header">
           <h2 className="text-h2">Recommended For You</h2>
         </div>
