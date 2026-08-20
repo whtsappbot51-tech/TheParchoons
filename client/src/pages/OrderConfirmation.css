@@ -33,11 +33,106 @@
   border: 1px dashed var(--primary);
 }
 
-.action-buttons {
+/* ===== Forgot Something Section ===== */
+.forgot-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-3);
+}
+
+/* ===== Timer Ring ===== */
+.timer-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-ring {
+  width: 80px;
+  height: 80px;
+  transform: rotate(-90deg);
+}
+
+.timer-ring-bg {
+  fill: none;
+  stroke: var(--border-light);
+  stroke-width: 6;
+}
+
+.timer-ring-progress {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 264;
+  stroke-dashoffset: 264;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timer-text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.timer-count {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}
+
+/* ===== Add More Button ===== */
+.btn-add-more {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 14px var(--spacing-6);
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  box-shadow: var(--shadow-green);
+  width: 100%;
+  max-width: 280px;
+  transition: all var(--transition-fast);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.btn-add-more:active {
+  transform: scale(0.97);
+  animation: none;
+}
+
+/* ===== Skip Button ===== */
+.btn-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.btn-text:active {
+  background: var(--bg-input);
+  color: var(--text-secondary);
+}
+
+/* ===== Final Section ===== */
+.final-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 100%;
 }
 
 /* ===== WhatsApp Button ===== */

@@ -1,26 +1,29 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { CheckCircle } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { CheckCircle, ShoppingBag, Clock, ArrowRight } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
 import './OrderConfirmation.css';
 
 const BOT_NUMBER = '917800108629';
-const STORE_URL = 'https://the-parchoons.vercel.app';
+const COUNTDOWN_SECONDS = 30;
 
 const OrderConfirmation = () => {
   const { orderId } = useParams();
-  const [countdown, setCountdown] = useState(3);
+  const navigate = useNavigate();
+  const { setPendingOrderId } = useAppContext();
+  const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
+  const [timerDone, setTimerDone] = useState(false);
 
-  // Deep link that opens WhatsApp chat directly (no pre-filled message)
-  const whatsappDeepLink = `https://api.whatsapp.com/send?phone=${BOT_NUMBER}`;
+  const whatsappLink = `https://api.whatsapp.com/send?phone=${BOT_NUMBER}`;
 
   useEffect(() => {
-    // Countdown timer
+    if (timerDone) return;
+
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          // Redirect using api.whatsapp.com which works better for programmatic navigation
-          window.location.replace(whatsappDeepLink);
+          setTimerDone(true);
           return 0;
         }
         return prev - 1;
@@ -28,38 +31,110 @@ const OrderConfirmation = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [whatsappDeepLink]);
+  }, [timerDone]);
+
+  // When timer ends, clear the pending order
+  useEffect(() => {
+    if (timerDone) {
+      setPendingOrderId(null);
+    }
+  }, [timerDone, setPendingOrderId]);
+
+  const handleAddMore = () => {
+    // Store the orderId so Checkout knows to append items
+    setPendingOrderId(orderId);
+    navigate('/');
+  };
+
+  const handleDone = () => {
+    setPendingOrderId(null);
+    setTimerDone(true);
+  };
+
+  const progressPercent = ((COUNTDOWN_SECONDS - countdown) / COUNTDOWN_SECONDS) * 100;
 
   return (
     <div className="confirmation-page">
       <div className="confirmation-content">
-        <CheckCircle size={80} className="success-icon mb-4" />
-        <h1 className="text-h1 mb-2">Order Placed!</h1>
-        <p className="text-muted mb-6">
-          Your order has been placed successfully and is being processed.
+        {/* Success Header */}
+        <CheckCircle size={72} className="success-icon mb-4" />
+        <h1 className="text-h1 mb-2">Order Placed! 🎉</h1>
+        <p className="text-muted mb-4">
+          Your order has been placed successfully.
         </p>
 
+        {/* Order ID */}
         <div className="order-id-box mb-6">
-          <span className="text-small">Order ID</span>
+          <span className="text-small text-muted">Order ID</span>
           <div className="font-bold text-h2">{orderId}</div>
         </div>
 
-        <div className="action-buttons">
-          <p className="text-muted mb-4">
-            Redirecting to WhatsApp in {countdown}...
-          </p>
-          
-          <a 
-            href={whatsappDeepLink}
-            rel="noopener noreferrer"
-            className="btn-whatsapp"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-            Return to WhatsApp
-          </a>
-        </div>
+        {/* Forgot Something Timer OR Final Actions */}
+        {!timerDone ? (
+          <div className="forgot-section animate-fade-in-up">
+            {/* Timer Ring */}
+            <div className="timer-container mb-4">
+              <svg className="timer-ring" viewBox="0 0 100 100">
+                <circle className="timer-ring-bg" cx="50" cy="50" r="42" />
+                <circle 
+                  className="timer-ring-progress" 
+                  cx="50" cy="50" r="42"
+                  style={{ strokeDashoffset: `${264 - (264 * progressPercent / 100)}` }}
+                />
+              </svg>
+              <div className="timer-text">
+                <Clock size={16} className="text-primary" />
+                <span className="timer-count">{countdown}s</span>
+              </div>
+            </div>
+
+            <h3 className="text-h3 mb-2">Forgot to add something? 🤔</h3>
+            <p className="text-small text-muted mb-4">
+              You can still add more items to this order!
+            </p>
+
+            <button 
+              className="btn-add-more mb-3"
+              onClick={handleAddMore}
+            >
+              <ShoppingBag size={18} />
+              Add More Items
+            </button>
+
+            <button 
+              className="btn-text"
+              onClick={handleDone}
+            >
+              No thanks, I'm done
+            </button>
+          </div>
+        ) : (
+          <div className="final-section animate-fade-in-up">
+            <p className="text-muted mb-4">
+              🚀 We're packing your order now!
+            </p>
+
+            <a 
+              href={whatsappLink}
+              rel="noopener noreferrer"
+              className="btn-whatsapp mb-3"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              Return to WhatsApp
+            </a>
+
+            <button 
+              className="btn-outline w-full"
+              onClick={() => navigate('/')}
+            >
+              <ShoppingBag size={16} />
+              Continue Shopping
+              <ArrowRight size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

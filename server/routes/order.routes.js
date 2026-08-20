@@ -148,45 +148,69 @@ router.post('/orders', async (req, res) => {
     }
     await customer.save();
 
-    // 7. Send WhatsApp Notifications (Async, don't block response)
+    // 7. Send WhatsApp Notifications
     (async () => {
         try {
             const ownerPhone = config.whatsapp.ownerPhone;
-            if (ownerPhone) {
-                const mapsLink = (customerLat && customerLon) ? `https://maps.google.com/?q=${customerLat},${customerLon}` : 'Not provided';
-                
-                let ownerMsg = `📦 *NEW ORDER RECEIVED!* 🔔\n`;
-                ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-                ownerMsg += `🆔 *Order ID:* ${orderId}\n`;
-                ownerMsg += `👤 *Customer:* ${name}\n`;
-                ownerMsg += `📞 *Phone:* ${phone}\n`;
-                ownerMsg += `📍 *Address:* ${address}\n`;
-                ownerMsg += `🗺️ *Location:* ${mapsLink}\n`;
-                if(distanceFromStore !== null) {
-                    ownerMsg += `📏 *Distance:* ${distanceFromStore} meters\n`;
-                }
-                ownerMsg += `\n🛍️ *Items Ordered:*\n${itemsText}\n`;
-                ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-                ownerMsg += `💰 *Subtotal:* ₹${subtotal}\n`;
-                ownerMsg += `🚚 *Delivery Fee:* ₹${deliveryFee}\n`;
-                ownerMsg += `✅ *Total:* ₹${total} (COD)\n`;
-                ownerMsg += `━━━━━━━━━━━━━━━━━━━━`;
 
-                await whatsappService.sendText(ownerPhone, ownerMsg);
-            }
-
-            // Customer confirmation
+            // Send CUSTOMER confirmation immediately
             let customerMsg = `✅ *Order Confirmed!*\n\n`;
             customerMsg += `Hey ${name}! 👋\n`;
             customerMsg += `Thank you for shopping with *TheParchoons* 💚\n\n`;
-            customerMsg += `🆔 *Order ID:* ${orderId}\n`;
-            customerMsg += `💰 *Total:* ₹${total} (Cash on Delivery)\n\n`;
+            customerMsg += `🆔 *Order ID:* ${orderId}\n\n`;
+            customerMsg += `🛍️ *Your Items:*\n${itemsText}\n`;
+            customerMsg += `💰 *Subtotal:* ₹${subtotal}\n`;
+            customerMsg += `🚚 *Delivery:* ₹${deliveryFee}\n`;
+            customerMsg += `✅ *Total:* ₹${total} (Cash on Delivery)\n\n`;
             customerMsg += `📦 Your order is being prepared and our delivery partner will reach you soon! 🚀\n\n`;
             if (ownerPhone) {
                 customerMsg += `📞 *For any queries contact:* +${ownerPhone}`;
             }
-
             await whatsappService.sendText(phone, customerMsg);
+
+            // DELAY OWNER notification by 60 seconds
+            // This gives the customer time to add forgotten items via the "Add More Items" flow
+            if (ownerPhone) {
+                setTimeout(async () => {
+                    try {
+                        // Re-fetch the order from DB to get the latest items (in case items were added)
+                        const latestOrder = await Order.findOne({ orderId }).lean();
+                        if (!latestOrder) return;
+
+                        const mapsLink = (latestOrder.customer.latitude && latestOrder.customer.longitude) 
+                            ? `https://maps.google.com/?q=${latestOrder.customer.latitude},${latestOrder.customer.longitude}` 
+                            : 'Not provided';
+
+                        // Rebuild items text from the latest order
+                        let latestItemsText = '';
+                        for (const item of latestOrder.items) {
+                            latestItemsText += `${item.productName} (${item.variantName}) x ${item.quantity} - ₹${item.lineTotal}\n`;
+                        }
+
+                        let ownerMsg = `📦 *NEW ORDER RECEIVED!* 🔔\n`;
+                        ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+                        ownerMsg += `🆔 *Order ID:* ${latestOrder.orderId}\n`;
+                        ownerMsg += `👤 *Customer:* ${latestOrder.customer.name}\n`;
+                        ownerMsg += `📞 *Phone:* ${latestOrder.customer.phone}\n`;
+                        ownerMsg += `📍 *Address:* ${latestOrder.customer.address}\n`;
+                        ownerMsg += `🗺️ *Location:* ${mapsLink}\n`;
+                        if (latestOrder.customer.distanceFromStore !== null) {
+                            ownerMsg += `📏 *Distance:* ${latestOrder.customer.distanceFromStore} meters\n`;
+                        }
+                        ownerMsg += `\n🛍️ *Items Ordered:*\n${latestItemsText}\n`;
+                        ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
+                        ownerMsg += `💰 *Subtotal:* ₹${latestOrder.subtotal}\n`;
+                        ownerMsg += `🚚 *Delivery Fee:* ₹${latestOrder.deliveryFee}\n`;
+                        ownerMsg += `✅ *Total:* ₹${latestOrder.total} (COD)\n`;
+                        ownerMsg += `━━━━━━━━━━━━━━━━━━━━`;
+
+                        await whatsappService.sendText(ownerPhone, ownerMsg);
+                        console.log(`📨 Owner notification sent for order ${orderId} (after 60s delay)`);
+                    } catch (delayErr) {
+                        console.error('Failed to send delayed owner notification:', delayErr);
+                    }
+                }, 30000); // 30 second delay
+            }
 
         } catch (err) {
             console.error('Failed to send WhatsApp notifications:', err);
@@ -199,6 +223,100 @@ router.post('/orders', async (req, res) => {
     console.error('Order placement error:', err);
     res.status(500).json({ error: 'Failed to place order.' });
   }
+});
+
+// PATCH /api/orders/:orderId/add-items — Add forgotten items to a recent order
+router.patch('/orders/:orderId/add-items', async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { cart } = req.body;
+
+        if (!cart || !Array.isArray(cart) || cart.length === 0) {
+            return res.status(400).json({ error: 'No items to add.' });
+        }
+
+        // Find the order — must be PENDING and created within last 2 minutes
+        const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000);
+        const order = await Order.findOne({ 
+            orderId, 
+            status: 'PENDING', 
+            createdAt: { $gte: twoMinAgo } 
+        });
+
+        if (!order) {
+            return res.status(400).json({ error: 'Order not found or modification window has expired.' });
+        }
+
+        // Verify and add items
+        let addedSubtotal = 0;
+        const newItems = [];
+
+        for (const item of cart) {
+            const product = await Product.findById(item.productId);
+            if (!product || !product.isActive) continue;
+
+            const variant = product.variants.id(item.variantId);
+            if (!variant) continue;
+
+            const lineTotal = variant.price * item.quantity;
+            addedSubtotal += lineTotal;
+
+            // Check if this exact product+variant already exists in the order
+            const existingItem = order.items.find(
+                i => i.productId.toString() === item.productId && i.variantId === item.variantId
+            );
+
+            if (existingItem) {
+                // Increase quantity
+                existingItem.quantity += item.quantity;
+                existingItem.lineTotal += lineTotal;
+            } else {
+                // Add new item
+                newItems.push({
+                    productId: product._id,
+                    productName: product.name,
+                    variantId: variant._id.toString(),
+                    variantName: variant.name,
+                    price: variant.price,
+                    quantity: item.quantity,
+                    lineTotal
+                });
+            }
+        }
+
+        // Push new items
+        if (newItems.length > 0) {
+            order.items.push(...newItems);
+        }
+
+        // Recalculate totals
+        order.subtotal += addedSubtotal;
+        order.total = order.subtotal + order.deliveryFee;
+
+        await order.save();
+
+        console.log(`📝 Added items to order ${orderId}. New total: ₹${order.total}`);
+
+        // Send updated confirmation to customer
+        (async () => {
+            try {
+                let updateMsg = `📝 *Order Updated!*\n\n`;
+                updateMsg += `Your order *${orderId}* has been updated with new items.\n\n`;
+                updateMsg += `✅ *New Total:* ₹${order.total} (Cash on Delivery)\n\n`;
+                updateMsg += `📦 We'll pack everything together! 💚`;
+                
+                await whatsappService.sendText(order.customer.phone, updateMsg);
+            } catch (err) {
+                console.error('Failed to send update notification:', err);
+            }
+        })();
+
+        res.json({ success: true, order: { orderId, total: order.total, itemCount: order.items.length } });
+
+    } catch (err) {
+        console.error('Add items error:', err);
+        res.status(500).json({ error: 'Failed to add items.' });
+    }
 });
 
 // GET /api/orders/:orderId — Track order
@@ -225,3 +343,4 @@ router.get('/orders/:orderId', async (req, res) => {
 });
 
 module.exports = router;
+

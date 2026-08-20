@@ -7,7 +7,7 @@ import './Checkout.css';
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { cart, getCartTotal, clearCart, settings, customerDetails, setCustomerDetails, location, setLocation } = useAppContext();
+  const { cart, getCartTotal, clearCart, settings, customerDetails, setCustomerDetails, location, setLocation, pendingOrderId, setPendingOrderId } = useAppContext();
   
   const [loadingLoc, setLoadingLoc] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -69,26 +69,46 @@ const Checkout = () => {
     setError('');
 
     try {
-      const payload = {
-        name: customerDetails.name,
-        phone: customerDetails.phone,
-        address: customerDetails.address,
-        location: location || {},
-        cart: cart.map(item => ({
-          productId: item.productId,
-          productName: item.productName,
-          variantId: item.variantId,
-          quantity: item.quantity
-        })),
-        paymentMethod: 'cod'
-      };
+      // If there's a pending order (user clicked "Add More Items"), append to it
+      if (pendingOrderId) {
+        const addPayload = {
+          cart: cart.map(item => ({
+            productId: item.productId,
+            productName: item.productName,
+            variantId: item.variantId,
+            quantity: item.quantity
+          }))
+        };
 
-      const res = await api.post('/orders', payload);
-      
-      if (res.data.success) {
-        // Navigate FIRST, then clear the cart so the useEffect guard doesn't kick in
-        navigate(`/order-confirmation/${res.data.order.orderId}`, { replace: true });
-        clearCart();
+        const res = await api.patch(`/orders/${pendingOrderId}/add-items`, addPayload);
+        
+        if (res.data.success) {
+          setPendingOrderId(null);
+          navigate(`/order-confirmation/${pendingOrderId}`, { replace: true });
+          clearCart();
+        }
+      } else {
+        // Normal new order flow
+        const payload = {
+          name: customerDetails.name,
+          phone: customerDetails.phone,
+          address: customerDetails.address,
+          location: location || {},
+          cart: cart.map(item => ({
+            productId: item.productId,
+            productName: item.productName,
+            variantId: item.variantId,
+            quantity: item.quantity
+          })),
+          paymentMethod: 'cod'
+        };
+
+        const res = await api.post('/orders', payload);
+        
+        if (res.data.success) {
+          navigate(`/order-confirmation/${res.data.order.orderId}`, { replace: true });
+          clearCart();
+        }
       }
     } catch (err) {
       console.error('Order submission failed', err);

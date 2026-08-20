@@ -13,6 +13,7 @@ export const AppProvider = ({ children }) => {
   // --- App State ---
   const [settings, setSettings] = useState(null);
   const [location, setLocation] = useState(null); // { lat, lng }
+  const [pendingOrderId, setPendingOrderId] = useState(null); // For "forgot something" flow
   const [customerDetails, setCustomerDetails] = useState(() => {
     const saved = localStorage.getItem('parchoons_customer');
     return saved ? JSON.parse(saved) : { name: '', phone: '', address: '' };
@@ -106,6 +107,8 @@ export const AppProvider = ({ children }) => {
         setLocation,
         customerDetails,
         setCustomerDetails,
+        pendingOrderId,
+        setPendingOrderId,
       }}
     >
       {children}
