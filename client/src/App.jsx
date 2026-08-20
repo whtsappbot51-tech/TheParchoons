@@ -4,6 +4,7 @@ import { AppProvider } from './context/AppContext';
 // We'll create these components and pages next
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
+import StickyCartBar from './components/StickyCartBar';
 import Home from './pages/Home';
 import Category from './pages/Category';
 import Categories from './pages/Categories';
@@ -37,6 +38,7 @@ function App() {
               <Route path="/account" element={<Account />} />
             </Routes>
           </main>
+          <StickyCartBar />
           <BottomNav />
         </div>
       </BrowserRouter>

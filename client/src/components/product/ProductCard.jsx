@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
+import { productCardUrl } from '../../utils/imageUrl';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
@@ -36,14 +37,15 @@ const ProductCard = ({ product }) => {
   };
 
   // Safe fallback for image: variant image -> product image -> placeholder
-  const imgUrl = selectedVariant.image || product.image || 'https://via.placeholder.com/150?text=No+Image';
+  const rawImgUrl = selectedVariant.image || product.image || 'https://via.placeholder.com/150?text=No+Image';
+  const imgUrl = productCardUrl(rawImgUrl);
 
   return (
     <div className="product-card">
       <div className="product-image-container">
         {product.isOnOffer && <div className="badge offer-badge">{product.offerText || 'Offer'}</div>}
         {product.isBestSeller && !product.isOnOffer && <div className="badge bestseller-badge">Best Seller</div>}
-        <img src={imgUrl} alt={product.name} className="product-image" loading="lazy" />
+        <img src={imgUrl} alt={product.name} className="product-image" loading="lazy" width="240" height="180" />
       </div>
       
       <div className="product-info">

@@ -1,0 +1,99 @@
+.sticky-cart-bar-wrapper {
+  position: fixed;
+  bottom: calc(65px + env(safe-area-inset-bottom)); /* Just above bottom nav */
+  left: 0;
+  width: 100%;
+  padding: 0 var(--spacing-4);
+  z-index: 100;
+  pointer-events: none; /* Let clicks pass through padding */
+}
+
+/* Ensure centering on desktop previews */
+@media (min-width: 480px) {
+  .sticky-cart-bar-wrapper {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 480px;
+  }
+}
+
+.sticky-cart-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--primary-gradient);
+  color: white;
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4);
+  pointer-events: auto; /* Re-enable clicks for the actual bar */
+  text-decoration: none;
+  margin-bottom: var(--spacing-3);
+}
+
+.cart-bar-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.cart-bar-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+}
+
+.cart-bar-icon {
+  color: white;
+}
+
+.cart-bar-count {
+  display: none; /* Icon wrap handles it, or we could use a badge. We'll show in text instead. */
+}
+
+.cart-bar-price {
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-bar-price .item-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.9;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.cart-bar-price .price-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cart-bar-action {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  gap: 4px;
+}
+
+.animate-slide-up {
+  animation: slideUpCart 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes slideUpCart {
+  from {
+    transform: translateY(150%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

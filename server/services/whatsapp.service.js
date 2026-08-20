@@ -28,6 +28,7 @@ const postToMeta = async (payload) => {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
+      timeout: config.whatsapp.timeoutMs || 10000,
     });
     console.log(`✅ [REAL SEND to ${phone}] Message ID: ${response.data?.messages?.[0]?.id}`);
     return { success: true, mock: false, data: response.data };

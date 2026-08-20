@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Loader2 } from 'lucide-react';
 import api from '../api';
@@ -12,6 +12,7 @@ const Checkout = () => {
   const [loadingLoc, setLoadingLoc] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const idempotencyKeyRef = useRef(crypto.randomUUID());
 
   // Protect route — but don't redirect if we're submitting (order in flight)
   useEffect(() => {
@@ -100,7 +101,8 @@ const Checkout = () => {
             variantId: item.variantId,
             quantity: item.quantity
           })),
-          paymentMethod: 'cod'
+          paymentMethod: 'cod',
+          idempotencyKey: idempotencyKeyRef.current,
         };
 
         const res = await api.post('/orders', payload);

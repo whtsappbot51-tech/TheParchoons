@@ -5,13 +5,13 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: 480px;
-  height: 60px;
+  height: 54px;
   background: var(--primary-gradient);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--spacing-4);
-  z-index: 50;
+  z-index: 200;
   box-shadow: 0 2px 16px rgba(12, 131, 31, 0.2);
 }
 
@@ -37,12 +37,27 @@
   transform: scale(0.92);
 }
 
+.brand-name-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .brand-name {
   font-size: 1.2rem;
   font-weight: 800;
   color: white;
   letter-spacing: -0.01em;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  line-height: 1.1;
+}
+
+.brand-subtitle {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
 }
 
 .cart-icon-wrapper {

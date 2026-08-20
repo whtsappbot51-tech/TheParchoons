@@ -63,7 +63,7 @@ const Search = () => {
         setResults([]);
         setHasSearched(false);
       }
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
@@ -71,7 +71,7 @@ const Search = () => {
   return (
     <div className="search-page">
       <div className="search-header">
-        <button className="icon-btn" onClick={() => navigate(-1)}>
+        <button className="back-btn" onClick={() => navigate(-1)}>
           <ArrowLeft size={24} />
         </button>
         <form className="search-input-wrapper" onSubmit={handleSearchSubmit}>

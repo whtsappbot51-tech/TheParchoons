@@ -1,11 +1,11 @@
 /* ===== DESIGN TOKENS ===== */
 :root {
-  /* Primary — Blinkit-inspired green */
-  --primary: #0C831F;
-  --primary-dark: #066A15;
-  --primary-light: #e8f5e9;
-  --primary-glow: rgba(12, 131, 31, 0.15);
-  --primary-gradient: linear-gradient(135deg, #0C831F 0%, #14a828 100%);
+  /* Primary — vibrant fresh green */
+  --primary: #16A34A;
+  --primary-dark: #15803D;
+  --primary-light: #dcfce7;
+  --primary-glow: rgba(22, 163, 74, 0.18);
+  --primary-gradient: linear-gradient(135deg, #16A34A 0%, #22c55e 100%);
 
   /* Secondary / Accent */
   --secondary: #f7b731;
@@ -18,18 +18,18 @@
   --text-light: #b0b0c0;
 
   /* Backgrounds */
-  --bg-body: #f5f5f5;
+  --bg-body: #f8faf8;
   --bg-card: #ffffff;
-  --bg-input: #f0f0f5;
+  --bg-input: #f2f4f2;
   --bg-elevated: #ffffff;
 
   /* Borders */
-  --border-color: #e8e8ef;
-  --border-light: #f0f0f5;
+  --border-color: #e2e8e4;
+  --border-light: #f0f2f0;
 
   /* Semantic */
   --danger: #e74c3c;
-  --success: #27ae60;
+  --success: #22c55e;
   --warning: #f39c12;
   --info: #3498db;
 
@@ -60,7 +60,7 @@
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
   --shadow-up: 0 -4px 16px rgba(0, 0, 0, 0.06);
-  --shadow-green: 0 4px 20px rgba(12, 131, 31, 0.2);
+  --shadow-green: 0 4px 20px rgba(22, 163, 74, 0.25);
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.05);
 
   /* Transitions */
@@ -162,17 +162,20 @@ img {
 /* ===== APP LAYOUT ===== */
 .app-container {
   max-width: 480px;
+  width: 100%;
   margin: 0 auto;
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--bg-body);
   position: relative;
   box-shadow: var(--shadow-xl);
   overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .page-content {
-  padding-top: 60px;
-  padding-bottom: 72px;
+  padding-top: 54px;
+  padding-bottom: 140px; /* Accounts for bottom nav + sticky cart */
   min-height: 100vh;
 }
 
@@ -246,7 +249,7 @@ img {
   border-radius: var(--radius-md);
   background-color: var(--bg-input);
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 16px; /* Forces mobile browsers to not zoom */
   color: var(--text-main);
   transition: all var(--transition-fast);
 }

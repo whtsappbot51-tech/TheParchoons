@@ -12,7 +12,7 @@ const OrderConfirmation = () => {
   const { orderId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { setPendingOrderId } = useAppContext();
+  const { setPendingOrderId, customerDetails } = useAppContext();
   
   // If coming back from "Add More Items" flow, skip the timer
   const isReturning = searchParams.get('updated') === '1';
@@ -28,7 +28,8 @@ const OrderConfirmation = () => {
     if (finalized.current) return; // prevent double-calling
     finalized.current = true;
     try {
-      await api.post(`/orders/${orderId}/finalize`);
+      const phone = customerDetails?.phone?.replace(/[^0-9]/g, '') || '';
+      await api.post(`/orders/${orderId}/finalize`, { phone });
       console.log('Order finalized, owner notified.');
     } catch (err) {
       console.error('Failed to finalize order:', err);

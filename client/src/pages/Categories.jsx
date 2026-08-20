@@ -38,7 +38,7 @@ const Categories = () => {
         {categories.length === 0 && !loading ? (
           <div className="empty-state">No categories found.</div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+          <div className="category-grid-compact">
             {categories.map(cat => (
               <CategoryCard key={cat._id} category={cat} />
             ))}

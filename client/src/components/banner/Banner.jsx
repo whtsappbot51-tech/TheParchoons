@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { bannerUrl } from '../../utils/imageUrl';
 import './Banner.css';
 
 const Banner = ({ banners }) => {
@@ -23,10 +24,16 @@ const Banner = ({ banners }) => {
         className="banner-track" 
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {banners.map((banner) => (
+        {banners.map((banner, idx) => (
           <div key={banner._id} className="banner-slide">
             <Link to={banner.ctaLink || '/'}>
-              <img src={banner.image} alt={banner.title} className="banner-image" />
+              <img 
+                src={bannerUrl(banner.image)} 
+                alt={banner.title} 
+                className="banner-image" 
+                loading={idx === 0 ? "eager" : "lazy"} 
+                width="480"
+              />
               {/* Optional overlay text if needed, usually text is baked into the image for grocery apps */}
             </Link>
           </div>

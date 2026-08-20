@@ -1,9 +1,23 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
+const nodeEnv = process.env.NODE_ENV || 'development';
+const isProduction = nodeEnv === 'production';
+
+// In production, critical secrets MUST be set
+if (isProduction) {
+  const required = ['JWT_SECRET', 'MONGODB_URI'];
+  const missing = required.filter(key => !process.env[key]);
+  if (missing.length > 0) {
+    console.error(`❌ Missing required environment variables: ${missing.join(', ')}`);
+    process.exit(1);
+  }
+}
+
 const config = {
   port: process.env.PORT || 5000,
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv,
+  isProduction,
   serverUrl: process.env.SERVER_URL || null,
 
   // Database
@@ -11,13 +25,18 @@ const config = {
 
   // Auth
   jwt: {
-    secret: process.env.JWT_SECRET || 'dev_jwt_secret_change_me',
+    secret: process.env.JWT_SECRET || (isProduction ? undefined : 'dev_jwt_secret_DO_NOT_USE_IN_PROD'),
     expiresIn: '7d',
   },
   admin: {
     defaultEmail: process.env.ADMIN_DEFAULT_EMAIL || 'admin@theparchoons.com',
-    defaultPassword: process.env.ADMIN_DEFAULT_PASSWORD || 'admin123',
+    defaultPassword: process.env.ADMIN_DEFAULT_PASSWORD || (isProduction ? undefined : 'admin123'),
   },
+
+  // CORS
+  allowedOrigins: process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : ['http://localhost:5173', 'http://localhost:3000'],
 
   // WhatsApp
   whatsapp: {
@@ -27,6 +46,7 @@ const config = {
     ownerPhone: process.env.OWNER_PHONE,
     botPhone: process.env.BOT_PHONE || '919999999999',
     apiVersion: 'v19.0',
+    timeoutMs: 10000, // 10-second timeout for external API calls
   },
 
   // Store Location & Delivery

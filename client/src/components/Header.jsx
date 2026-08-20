@@ -11,8 +11,11 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-left">
-        <Link to="/" className="brand-name">
-          {settings?.storeName || 'TheParchoons'}
+        <Link to="/" className="brand-name-container">
+          <div className="brand-name">{settings?.storeName || 'TheParchoons'}</div>
+          <div className="brand-subtitle">
+            ⚡ 10 MIN DELIVERY
+          </div>
         </Link>
       </div>
       

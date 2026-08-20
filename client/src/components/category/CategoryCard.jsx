@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { categoryUrl } from '../../utils/imageUrl';
 import './CategoryCard.css';
 
 const CategoryCard = ({ category }) => {
@@ -6,7 +7,7 @@ const CategoryCard = ({ category }) => {
     <Link to={`/category/${category._id}`} className="category-card">
       <div className="category-image-wrapper">
         {category.image ? (
-          <img src={category.image} alt={category.name} className="category-image" loading="lazy" />
+          <img src={categoryUrl(category.image)} alt={category.name} className="category-image" loading="lazy" width="96" height="96" />
         ) : (
           <div className="category-emoji-fallback">{category.emoji || '🛒'}</div>
         )}

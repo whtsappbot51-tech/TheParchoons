@@ -19,6 +19,13 @@
   box-shadow: var(--shadow-xs);
 }
 
+.search-header .back-btn {
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .search-input-wrapper {
   flex: 1;
   display: flex;
@@ -43,7 +50,7 @@
   border: none;
   background: transparent;
   padding: 0 var(--spacing-2);
-  font-size: 0.92rem;
+  font-size: 16px; /* Fix zoom bug */
   outline: none;
   font-family: inherit;
   color: var(--text-main);
