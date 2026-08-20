@@ -153,7 +153,7 @@ router.post('/orders', async (req, res) => {
         try {
             const ownerPhone = config.whatsapp.ownerPhone;
 
-            // Send CUSTOMER confirmation immediately
+            // Send CUSTOMER confirmation immediately (owner notification is sent later via /finalize)
             let customerMsg = `✅ *Order Confirmed!*\n\n`;
             customerMsg += `Hey ${name}! 👋\n`;
             customerMsg += `Thank you for shopping with *TheParchoons* 💚\n\n`;
@@ -167,50 +167,6 @@ router.post('/orders', async (req, res) => {
                 customerMsg += `📞 *For any queries contact:* +${ownerPhone}`;
             }
             await whatsappService.sendText(phone, customerMsg);
-
-            // DELAY OWNER notification by 60 seconds
-            // This gives the customer time to add forgotten items via the "Add More Items" flow
-            if (ownerPhone) {
-                setTimeout(async () => {
-                    try {
-                        // Re-fetch the order from DB to get the latest items (in case items were added)
-                        const latestOrder = await Order.findOne({ orderId }).lean();
-                        if (!latestOrder) return;
-
-                        const mapsLink = (latestOrder.customer.latitude && latestOrder.customer.longitude) 
-                            ? `https://maps.google.com/?q=${latestOrder.customer.latitude},${latestOrder.customer.longitude}` 
-                            : 'Not provided';
-
-                        // Rebuild items text from the latest order
-                        let latestItemsText = '';
-                        for (const item of latestOrder.items) {
-                            latestItemsText += `${item.productName} (${item.variantName}) x ${item.quantity} - ₹${item.lineTotal}\n`;
-                        }
-
-                        let ownerMsg = `📦 *NEW ORDER RECEIVED!* 🔔\n`;
-                        ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
-                        ownerMsg += `🆔 *Order ID:* ${latestOrder.orderId}\n`;
-                        ownerMsg += `👤 *Customer:* ${latestOrder.customer.name}\n`;
-                        ownerMsg += `📞 *Phone:* ${latestOrder.customer.phone}\n`;
-                        ownerMsg += `📍 *Address:* ${latestOrder.customer.address}\n`;
-                        ownerMsg += `🗺️ *Location:* ${mapsLink}\n`;
-                        if (latestOrder.customer.distanceFromStore !== null) {
-                            ownerMsg += `📏 *Distance:* ${latestOrder.customer.distanceFromStore} meters\n`;
-                        }
-                        ownerMsg += `\n🛍️ *Items Ordered:*\n${latestItemsText}\n`;
-                        ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
-                        ownerMsg += `💰 *Subtotal:* ₹${latestOrder.subtotal}\n`;
-                        ownerMsg += `🚚 *Delivery Fee:* ₹${latestOrder.deliveryFee}\n`;
-                        ownerMsg += `✅ *Total:* ₹${latestOrder.total} (COD)\n`;
-                        ownerMsg += `━━━━━━━━━━━━━━━━━━━━`;
-
-                        await whatsappService.sendText(ownerPhone, ownerMsg);
-                        console.log(`📨 Owner notification sent for order ${orderId} (after 60s delay)`);
-                    } catch (delayErr) {
-                        console.error('Failed to send delayed owner notification:', delayErr);
-                    }
-                }, 30000); // 30 second delay
-            }
 
         } catch (err) {
             console.error('Failed to send WhatsApp notifications:', err);
@@ -297,11 +253,19 @@ router.patch('/orders/:orderId/add-items', async (req, res) => {
 
         console.log(`📝 Added items to order ${orderId}. New total: ₹${order.total}`);
 
-        // Send updated confirmation to customer
+        // Send updated confirmation to customer with full details
         (async () => {
             try {
+                let updatedItemsText = '';
+                for (const item of order.items) {
+                    updatedItemsText += `${item.productName} (${item.variantName}) x ${item.quantity} - ₹${item.lineTotal}\n`;
+                }
+
                 let updateMsg = `📝 *Order Updated!*\n\n`;
                 updateMsg += `Your order *${orderId}* has been updated with new items.\n\n`;
+                updateMsg += `🛍️ *Updated Items:*\n${updatedItemsText}\n`;
+                updateMsg += `💰 *Subtotal:* ₹${order.subtotal}\n`;
+                updateMsg += `🚚 *Delivery:* ₹${order.deliveryFee}\n`;
                 updateMsg += `✅ *New Total:* ₹${order.total} (Cash on Delivery)\n\n`;
                 updateMsg += `📦 We'll pack everything together! 💚`;
                 
@@ -316,6 +280,59 @@ router.patch('/orders/:orderId/add-items', async (req, res) => {
     } catch (err) {
         console.error('Add items error:', err);
         res.status(500).json({ error: 'Failed to add items.' });
+    }
+});
+
+// POST /api/orders/:orderId/finalize — Send owner notification (called when timer ends on frontend)
+router.post('/orders/:orderId/finalize', async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const ownerPhone = config.whatsapp.ownerPhone;
+
+        if (!ownerPhone) {
+            return res.json({ success: true, message: 'No owner phone configured.' });
+        }
+
+        const order = await Order.findOne({ orderId }).lean();
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found.' });
+        }
+
+        // Build the owner message with latest data from DB
+        const mapsLink = (order.customer.latitude && order.customer.longitude) 
+            ? `https://maps.google.com/?q=${order.customer.latitude},${order.customer.longitude}` 
+            : 'Not provided';
+
+        let itemsText = '';
+        for (const item of order.items) {
+            itemsText += `${item.productName} (${item.variantName}) x ${item.quantity} - ₹${item.lineTotal}\n`;
+        }
+
+        let ownerMsg = `📦 *NEW ORDER RECEIVED!* 🔔\n`;
+        ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+        ownerMsg += `🆔 *Order ID:* ${order.orderId}\n`;
+        ownerMsg += `👤 *Customer:* ${order.customer.name}\n`;
+        ownerMsg += `📞 *Phone:* ${order.customer.phone}\n`;
+        ownerMsg += `📍 *Address:* ${order.customer.address}\n`;
+        ownerMsg += `🗺️ *Location:* ${mapsLink}\n`;
+        if (order.customer.distanceFromStore !== null) {
+            ownerMsg += `📏 *Distance:* ${order.customer.distanceFromStore} meters\n`;
+        }
+        ownerMsg += `\n🛍️ *Items Ordered:*\n${itemsText}\n`;
+        ownerMsg += `━━━━━━━━━━━━━━━━━━━━\n`;
+        ownerMsg += `💰 *Subtotal:* ₹${order.subtotal}\n`;
+        ownerMsg += `🚚 *Delivery Fee:* ₹${order.deliveryFee}\n`;
+        ownerMsg += `✅ *Total:* ₹${order.total} (COD)\n`;
+        ownerMsg += `━━━━━━━━━━━━━━━━━━━━`;
+
+        await whatsappService.sendText(ownerPhone, ownerMsg);
+        console.log(`📨 Owner notification sent for order ${orderId} (via /finalize)`);
+
+        res.json({ success: true, message: 'Owner notified.' });
+
+    } catch (err) {
+        console.error('Finalize error:', err);
+        res.status(500).json({ error: 'Failed to notify owner.' });
     }
 });
 

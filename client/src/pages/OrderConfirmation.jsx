@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, ShoppingBag, Clock, ArrowRight } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import api from '../api';
 import './OrderConfirmation.css';
 
 const BOT_NUMBER = '917800108629';
@@ -9,12 +10,30 @@ const COUNTDOWN_SECONDS = 30;
 
 const OrderConfirmation = () => {
   const { orderId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { setPendingOrderId } = useAppContext();
-  const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
-  const [timerDone, setTimerDone] = useState(false);
+  
+  // If coming back from "Add More Items" flow, skip the timer
+  const isReturning = searchParams.get('updated') === '1';
+  
+  const [countdown, setCountdown] = useState(isReturning ? 0 : COUNTDOWN_SECONDS);
+  const [timerDone, setTimerDone] = useState(isReturning);
+  const finalized = useRef(false);
 
   const whatsappLink = `https://api.whatsapp.com/send?phone=${BOT_NUMBER}`;
+
+  // Finalize: notify the owner with the latest order data
+  const finalizeOrder = async () => {
+    if (finalized.current) return; // prevent double-calling
+    finalized.current = true;
+    try {
+      await api.post(`/orders/${orderId}/finalize`);
+      console.log('Order finalized, owner notified.');
+    } catch (err) {
+      console.error('Failed to finalize order:', err);
+    }
+  };
 
   useEffect(() => {
     if (timerDone) return;
@@ -33,15 +52,15 @@ const OrderConfirmation = () => {
     return () => clearInterval(interval);
   }, [timerDone]);
 
-  // When timer ends, clear the pending order
+  // When timer ends → finalize the order (notify owner)
   useEffect(() => {
     if (timerDone) {
       setPendingOrderId(null);
+      finalizeOrder();
     }
-  }, [timerDone, setPendingOrderId]);
+  }, [timerDone]);
 
   const handleAddMore = () => {
-    // Store the orderId so Checkout knows to append items
     setPendingOrderId(orderId);
     navigate('/');
   };
@@ -58,9 +77,14 @@ const OrderConfirmation = () => {
       <div className="confirmation-content">
         {/* Success Header */}
         <CheckCircle size={72} className="success-icon mb-4" />
-        <h1 className="text-h1 mb-2">Order Placed! 🎉</h1>
+        <h1 className="text-h1 mb-2">
+          {isReturning ? 'Items Added! ✅' : 'Order Placed! 🎉'}
+        </h1>
         <p className="text-muted mb-4">
-          Your order has been placed successfully.
+          {isReturning 
+            ? 'Your order has been updated with the new items.'
+            : 'Your order has been placed successfully.'
+          }
         </p>
 
         {/* Order ID */}

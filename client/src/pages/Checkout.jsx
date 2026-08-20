@@ -84,7 +84,7 @@ const Checkout = () => {
         
         if (res.data.success) {
           setPendingOrderId(null);
-          navigate(`/order-confirmation/${pendingOrderId}`, { replace: true });
+          navigate(`/order-confirmation/${pendingOrderId}?updated=1`, { replace: true });
           clearCart();
         }
       } else {
