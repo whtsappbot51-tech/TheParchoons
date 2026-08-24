@@ -7,13 +7,15 @@ import ProductCard from '../components/product/ProductCard';
 import { Search, ChevronRight } from 'lucide-react';
 import './Home.css';
 
-const SEARCH_TERMS = ['atta', 'dal', 'mustard oil', 'milk', 'basmati rice', 'bread', 'sugar', 'paneer', 'maggi', 'tea', 'biscuits', 'salt'];
+const SEARCH_TERMS = ['atta', 'dal', 'mustard oil', 'milk', 'surf excel', 'bread', 'sugar', 'paneer', 'maggi', 'tea', 'biscuits', 'shampoo', 'namkeen', 'chips'];
+
 
 const Home = () => {
   const navigate = useNavigate();
   const [banners, setBanners] = useState([]);
   const [categories, setCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [bestSellers, setBestSellers] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Typing effect state
@@ -25,15 +27,17 @@ const Home = () => {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        const [bannersRes, catsRes, prodsRes] = await Promise.all([
+        const [bannersRes, catsRes, featuredRes, bestsellerRes] = await Promise.all([
           api.get('/banners'),
           api.get('/categories'),
-          api.get('/products?featured=true&limit=15')
+          api.get('/products?featured=true&limit=15'),
+          api.get('/products?bestseller=true&limit=15')
         ]);
         
         setBanners(bannersRes.data.banners);
         setCategories(catsRes.data.categories);
-        setFeaturedProducts(prodsRes.data.products);
+        setFeaturedProducts(featuredRes.data.products);
+        setBestSellers(bestsellerRes.data.products);
       } catch (err) {
         console.error('Error fetching home data:', err);
       } finally {
@@ -81,8 +85,9 @@ const Home = () => {
   }, [currentText, isDeleting, currentTermIndex]);
 
   const topCategories = categories.slice(0, 8);
-  const bestSellers = featuredProducts.slice(0, 8);
-  const todaysOffers = featuredProducts.filter(p => p.isOnOffer || p.variants.some(v => v.mrp > v.price)).slice(0, 8);
+  const displayBestSellers = bestSellers.slice(0, 10);
+  // Only show Today's Offers if a product is explicitly on offer or has a discounted price
+  const todaysOffers = [...featuredProducts, ...bestSellers].filter(p => p.isOnOffer || p.variants.some(v => v.mrp > v.price)).slice(0, 8);
 
   return (
     <div className="home-page">
@@ -123,7 +128,7 @@ const Home = () => {
           <h2 className="text-h2">Popular Near You</h2>
         </div>
         <div className="horizontal-scroll">
-          {bestSellers.map(product => (
+          {displayBestSellers.map(product => (
             <div className="product-scroll-item" key={product._id}>
               <ProductCard product={product} />
             </div>

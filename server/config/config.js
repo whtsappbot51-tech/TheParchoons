@@ -36,7 +36,7 @@ const config = {
   // CORS
   allowedOrigins: process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : ['http://localhost:5173', 'http://localhost:3000'],
+    : ['http://localhost:5173', 'http://localhost:3000', 'https://theparchoons.store', 'https://www.theparchoons.store', 'http://theparchoons.store', 'http://www.theparchoons.store'],
 
   // WhatsApp
   whatsapp: {
