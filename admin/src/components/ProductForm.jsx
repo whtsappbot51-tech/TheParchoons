@@ -139,6 +139,9 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
   };
 
   const compressImage = (file) => {
+    // Skip compression for small files (<500KB) — saves time
+    if (file.size < 500 * 1024) return Promise.resolve(file);
+
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -147,7 +150,7 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const MAX_SIZE = 800; // Resize to max 800px
+          const MAX_SIZE = 800;
           
           if (width > height && width > MAX_SIZE) {
             height *= MAX_SIZE / width;
@@ -168,7 +171,7 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
               lastModified: Date.now(),
             });
             resolve(compressedFile);
-          }, 'image/jpeg', 0.8); // 80% quality
+          }, 'image/jpeg', 0.8);
         };
         img.src = event.target.result;
       };
@@ -206,14 +209,19 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
     setLoading(true);
     setUploading(true);
     try {
-      // Execute ALL uploads concurrently for maximum speed
-      const mainImagePromise = imageFile ? uploadFile(imageFile) : Promise.resolve(formData.image);
+      // Only upload if a NEW file was selected, otherwise use existing URL
+      const hasNewMainImage = imageFile !== null;
+      const mainImagePromise = hasNewMainImage ? uploadFile(imageFile) : Promise.resolve(formData.image);
       
       const variantPromises = Promise.all(
         formData.variants.map(async (variant, index) => {
           let vImageUrl = variant.image;
+          // Only upload if user picked a new file for this variant
           if (variantImageFiles[index]) {
             vImageUrl = await uploadFile(variantImageFiles[index]);
+          } else if (vImageUrl && vImageUrl.startsWith('data:')) {
+            // Strip data URIs that are just previews (no actual file to upload)
+            vImageUrl = '';
           }
           return { ...variant, image: vImageUrl };
         })
@@ -353,6 +361,22 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
                     <input type="file" accept="image/*" onChange={handleImageChange} hidden />
                   </label>
                 )}
+              </div>
+              {/* Or paste image URL directly */}
+              <div className="form-group" style={{ marginTop: '0.5rem' }}>
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="Or paste image URL here..."
+                  value={formData.image || ''}
+                  onChange={(e) => {
+                    const url = e.target.value;
+                    setFormData(p => ({ ...p, image: url }));
+                    if (url && !imageFile) setImagePreview(url);
+                    if (!url) { setImagePreview(''); setImageFile(null); }
+                  }}
+                  style={{ fontSize: '0.8rem' }}
+                />
               </div>
 
               <div className="flex justify-between items-center mt-6" style={{ marginBottom: '1.5rem' }}>

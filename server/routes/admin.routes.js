@@ -105,12 +105,19 @@ router.delete('/categories/:id', validateMongoId, async (req, res) => {
 router.get('/products', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
+    const limit = parseInt(req.query.limit) || 30;
     const skip = (page - 1) * limit;
+    const { search, category } = req.query;
+
+    const filter = {};
+    if (category) filter.category = category;
+    if (search) {
+      filter.name = { $regex: search, $options: 'i' };
+    }
 
     const [products, total] = await Promise.all([
-      Product.find().populate('category', 'name').sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      Product.countDocuments(),
+      Product.find(filter).populate('category', 'name').sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Product.countDocuments(filter),
     ]);
     res.json({ success: true, products, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
   } catch (err) {

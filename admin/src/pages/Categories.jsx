@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Loader2, Search } from 'lucide-react';
 import api from '../api';
 import CategoryForm from '../components/CategoryForm';
 
@@ -8,6 +8,7 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -37,7 +38,6 @@ const Categories = () => {
 
   const handleFormSuccess = (savedCategory, isEdit) => {
     setIsFormOpen(false);
-    // Optimistic UI updates
     if (isEdit) {
       setCategories(prev => prev.map(c => c._id === savedCategory._id ? savedCategory : c).sort((a, b) => a.sortOrder - b.sortOrder));
     } else {
@@ -56,9 +56,14 @@ const Categories = () => {
     }
   };
 
+  // Client-side search filter (categories are small list)
+  const filteredCategories = categories.filter(cat =>
+    cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full w-full">
+      <div className="flex items-center justify-center h-full w-full" style={{ minHeight: '50vh' }}>
         <Loader2 size={40} className="spin text-primary" />
       </div>
     );
@@ -67,11 +72,24 @@ const Categories = () => {
   return (
     <div className="page-container">
       <div className="flex justify-between items-center mb-6" style={{ flexWrap: 'wrap', gap: '1rem' }}>
-        <h1 className="text-h1">Categories</h1>
+        <h1 className="text-h1">Categories <span className="text-muted text-small">({categories.length})</span></h1>
         <button className="btn-primary" onClick={handleAddCategory}>
           <Plus size={20} />
           Add Category
         </button>
+      </div>
+
+      {/* Search Bar */}
+      <div style={{ marginBottom: '1rem', position: 'relative', maxWidth: '400px' }}>
+        <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+        <input
+          type="text"
+          className="input-field"
+          placeholder="Search categories..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ paddingLeft: '36px' }}
+        />
       </div>
 
       <div className="table-wrapper">
@@ -85,7 +103,7 @@ const Categories = () => {
               </tr>
             </thead>
             <tbody>
-              {categories.map((category) => (
+              {filteredCategories.map((category) => (
                 <tr key={category._id}>
                   <td data-label="Emoji" style={{ fontSize: '1.5rem' }}>{category.emoji}</td>
                   <td data-label="Name" className="font-bold">{category.name}</td>
@@ -102,10 +120,10 @@ const Categories = () => {
                   </td>
                 </tr>
               ))}
-              {categories.length === 0 && (
+              {filteredCategories.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="text-center py-4 text-muted">
-                    No categories found. Click "Add Category" to create one.
+                  <td colSpan="4" className="text-center py-4 text-muted" style={{ textAlign: 'center', padding: '2rem' }}>
+                    {searchQuery ? `No categories matching "${searchQuery}"` : 'No categories found. Click "Add Category" to create one.'}
                   </td>
                 </tr>
               )}

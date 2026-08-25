@@ -263,10 +263,15 @@ button {
 /* Flex */
 .flex { display: flex; }
 .justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
 .items-center { align-items: center; }
 .gap-2 { gap: var(--spacing-2); }
 .gap-4 { gap: var(--spacing-4); }
 .mb-6 { margin-bottom: var(--spacing-6); }
+.font-bold { font-weight: 600; }
+.text-primary { color: var(--primary); }
+.text-danger { color: var(--danger); }
+.text-center { text-align: center; }
 
 /* Mobile Table (Card View) */
 @media (max-width: 767px) {
