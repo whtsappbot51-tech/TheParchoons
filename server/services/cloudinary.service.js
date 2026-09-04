@@ -33,10 +33,7 @@ const cloudinaryService = {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder,
-          resource_type: 'image',
-          transformation: [
-            { width: 800, height: 800, crop: 'limit', quality: 'auto', fetch_format: 'auto' },
-          ],
+          resource_type: 'image'
         },
         (error, result) => {
           if (error) return reject(error);

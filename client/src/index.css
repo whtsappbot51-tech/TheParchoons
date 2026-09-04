@@ -1,11 +1,11 @@
 /* ===== DESIGN TOKENS ===== */
 :root {
-  /* Primary — vibrant fresh green */
-  --primary: #16A34A;
-  --primary-dark: #15803D;
-  --primary-light: #dcfce7;
-  --primary-glow: rgba(22, 163, 74, 0.18);
-  --primary-gradient: linear-gradient(135deg, #16A34A 0%, #22c55e 100%);
+  /* Primary — dark blue / black theme */
+  --primary: #010618;
+  --primary-dark: #000000;
+  --primary-light: #1a2240;
+  --primary-glow: rgba(1, 6, 24, 0.25);
+  --primary-gradient: linear-gradient(135deg, #010618 0%, #1a2240 100%);
 
   /* Secondary / Accent */
   --secondary: #f7b731;
@@ -60,7 +60,7 @@
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
   --shadow-up: 0 -4px 16px rgba(0, 0, 0, 0.06);
-  --shadow-green: 0 4px 20px rgba(22, 163, 74, 0.25);
+  --shadow-primary: 0 4px 20px rgba(1, 6, 24, 0.35);
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.05);
 
   /* Transitions */
@@ -194,7 +194,7 @@ img {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
-  box-shadow: var(--shadow-green);
+  box-shadow: var(--shadow-primary);
   position: relative;
   overflow: hidden;
 }

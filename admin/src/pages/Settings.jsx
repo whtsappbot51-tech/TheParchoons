@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Megaphone, Type, Store, Save, Check, Loader2 } from 'lucide-react';
+import { Megaphone, Type, Store, Save, Check, Loader2, Clock } from 'lucide-react';
 import api from '../api';
 import './Settings.css';
 
@@ -37,6 +37,13 @@ const Settings = () => {
   const [storeSaving, setStoreSaving] = useState(false);
   const [storeSaved, setStoreSaved] = useState(false);
 
+  // --- Operating Hours State ---
+  const [storeHoursEnabled, setStoreHoursEnabled] = useState(false);
+  const [storeOpenTime, setStoreOpenTime] = useState('08:00');
+  const [storeCloseTime, setStoreCloseTime] = useState('22:00');
+  const [hoursSaving, setHoursSaving] = useState(false);
+  const [hoursSaved, setHoursSaved] = useState(false);
+
   // --- Fetch existing settings on mount ---
   useEffect(() => {
     const fetchSettings = async () => {
@@ -60,6 +67,10 @@ const Settings = () => {
           setStorePhone(map.STORE_PHONE || '');
           setStoreAddress(map.STORE_ADDRESS || '');
           setStoreTimings(map.STORE_TIMINGS || '');
+
+          setStoreHoursEnabled(map.STORE_HOURS_ENABLED === 'true');
+          setStoreOpenTime(map.STORE_OPEN_TIME || '08:00');
+          setStoreCloseTime(map.STORE_CLOSE_TIME || '22:00');
         }
       } catch (err) {
         console.error('Failed to load settings', err);
@@ -90,6 +101,12 @@ const Settings = () => {
     const newVal = e.target.checked;
     setMarqueeEnabled(newVal);
     quickSaveToggle('MARQUEE_ENABLED', newVal);
+  };
+
+  const handleHoursToggle = (e) => {
+    const newVal = e.target.checked;
+    setStoreHoursEnabled(newVal);
+    quickSaveToggle('STORE_HOURS_ENABLED', newVal);
   };
 
   // --- Save helpers for content fields ---
@@ -130,6 +147,13 @@ const Settings = () => {
       { key: 'STORE_ADDRESS', value: storeAddress },
       { key: 'STORE_TIMINGS', value: storeTimings },
     ], setStoreSaving, setStoreSaved);
+  };
+
+  const handleSaveHours = () => {
+    saveSettings([
+      { key: 'STORE_OPEN_TIME', value: storeOpenTime },
+      { key: 'STORE_CLOSE_TIME', value: storeCloseTime },
+    ], setHoursSaving, setHoursSaved);
   };
 
   const SaveButton = ({ saving, saved, onClick }) => (
@@ -342,6 +366,49 @@ const Settings = () => {
           </div>
 
           <SaveButton saving={storeSaving} saved={storeSaved} onClick={handleSaveStore} />
+        </div>
+      </div>
+
+      {/* ─── Operating Hours ─── */}
+      <div className={`settings-section ${!storeHoursEnabled ? 'disabled' : ''}`}>
+        <div className="settings-section-header">
+          <h3>
+            <Clock size={20} className="section-icon" />
+            Automatic Operating Hours
+          </h3>
+          <label className="toggle-switch">
+            <input
+              type="checkbox"
+              checked={storeHoursEnabled}
+              onChange={handleHoursToggle}
+            />
+            <span className="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div className="settings-body">
+          <p className="text-small text-muted mb-4">
+            When enabled, the customer app will automatically show a "Store Closed" message outside of these hours.
+          </p>
+          <div className="settings-form-row">
+            <div className="settings-form-group">
+              <label>Opening Time</label>
+              <input
+                type="time"
+                value={storeOpenTime}
+                onChange={(e) => setStoreOpenTime(e.target.value)}
+              />
+            </div>
+            <div className="settings-form-group">
+              <label>Closing Time</label>
+              <input
+                type="time"
+                value={storeCloseTime}
+                onChange={(e) => setStoreCloseTime(e.target.value)}
+              />
+            </div>
+          </div>
+          <SaveButton saving={hoursSaving} saved={hoursSaved} onClick={handleSaveHours} />
         </div>
       </div>
     </div>

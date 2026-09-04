@@ -73,6 +73,10 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  salesCount: {
+    type: Number,
+    default: 0,
+  },
   offerText: {
     type: String,
     default: '',   // e.g. "10% OFF"
@@ -87,5 +91,6 @@ productSchema.index({ category: 1, isActive: 1 });
 productSchema.index({ isFeatured: 1, isActive: 1 });
 productSchema.index({ isBestSeller: 1, isActive: 1 });
 productSchema.index({ isOnOffer: 1, isActive: 1 });
+productSchema.index({ salesCount: -1, isActive: 1 }); // New index for dynamic popular items
 
 module.exports = mongoose.model('Product', productSchema);

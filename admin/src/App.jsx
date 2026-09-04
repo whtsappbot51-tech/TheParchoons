@@ -13,6 +13,7 @@ import Products from './pages/Products';
 import Orders from './pages/Orders';
 import Categories from './pages/Categories';
 import Settings from './pages/Settings';
+import MaintenanceOverlay from './components/MaintenanceOverlay';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children }) => {
@@ -39,6 +40,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <MaintenanceOverlay />
         <Routes>
           <Route path="/login" element={<Login />} />
           

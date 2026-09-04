@@ -99,7 +99,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
-  box-shadow: var(--shadow-green);
+  box-shadow: var(--shadow-primary);
   width: 100%;
   max-width: 280px;
   transition: all var(--transition-fast);

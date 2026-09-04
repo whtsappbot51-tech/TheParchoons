@@ -94,7 +94,7 @@
   scroll-snap-type: x mandatory;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  gap: 12px;
+  gap: 16px;
   padding: 0 0 16px 0;
 }
 
@@ -102,18 +102,16 @@
   display: none; /* Safari and Chrome */
 }
 
+/* Bulletproof spacing for scroll containers (adds 20px total padding on edges) */
+.horizontal-scroll::before,
+.horizontal-scroll::after {
+  content: '';
+  flex: 0 0 4px; /* 4px width + 16px gap = 20px left/right spacing */
+}
+
 .product-scroll-item {
   flex: 0 0 140px; /* Slightly wider cards */
   scroll-snap-align: start;
-}
-
-/* Bulletproof spacing for scroll-snap containers */
-.product-scroll-item:first-child {
-  margin-left: 20px;
-}
-
-.product-scroll-item:last-child {
-  margin-right: 20px;
 }
 
 /* ===== Product Grid ===== */

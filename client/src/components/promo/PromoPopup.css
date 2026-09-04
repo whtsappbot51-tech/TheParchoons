@@ -97,16 +97,18 @@
   color: white;
   border: none;
   border-radius: var(--radius-lg);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: var(--shadow-green);
+  box-shadow: var(--shadow-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .promo-popup-cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(12, 131, 31, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(1, 6, 24, 0.45);
 }
 
 .promo-popup-cta:active {

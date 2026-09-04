@@ -143,6 +143,21 @@ router.post('/orders', sanitizeBody, validateOrderCreation, async (req, res) => 
 
     await newOrder.save();
 
+    // --- Increment sales count for each product ---
+    try {
+      const bulkOps = verifiedItems.map(item => ({
+        updateOne: {
+          filter: { _id: item.productId },
+          update: { $inc: { salesCount: item.quantity } }
+        }
+      }));
+      if (bulkOps.length > 0) {
+        await Product.bulkWrite(bulkOps);
+      }
+    } catch (err) {
+      console.error('Failed to update product sales count:', err.message);
+    }
+
     // --- Store idempotency key ---
     const orderResponse = { orderId, total, status: newOrder.status };
     if (idempotencyKey) {

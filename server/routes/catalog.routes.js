@@ -46,7 +46,7 @@ router.get('/products', async (req, res) => {
     const filter = { isActive: true };
     if (category) filter.category = category;
     if (featured === 'true') filter.isFeatured = true;
-    if (bestseller === 'true') filter.isBestSeller = true;
+    // We removed filter.isBestSeller = true; we now sort dynamically!
     if (offer === 'true') filter.isOnOffer = true;
 
     let query;
@@ -55,7 +55,11 @@ router.get('/products', async (req, res) => {
       query = Product.find(filter, { score: { $meta: 'textScore' } })
         .sort({ score: { $meta: 'textScore' } });
     } else {
-      query = Product.find(filter).sort({ createdAt: -1 });
+      let sortObj = { createdAt: -1 };
+      if (bestseller === 'true') {
+        sortObj = { salesCount: -1, createdAt: -1 }; // Dynamic sort!
+      }
+      query = Product.find(filter).sort(sortObj);
     }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -155,6 +159,9 @@ router.get('/settings/public', async (req, res) => {
         marqueeEnabled: s.MARQUEE_ENABLED === 'true',
         marqueeText: s.MARQUEE_TEXT || '',
         marqueeColor: s.MARQUEE_COLOR || 'green',
+        storeHoursEnabled: s.STORE_HOURS_ENABLED === 'true',
+        storeOpenTime: s.STORE_OPEN_TIME || '08:00',
+        storeCloseTime: s.STORE_CLOSE_TIME || '22:00',
       };
 
       cacheService.set(cacheKey, settingsObj, 600); // 10 min

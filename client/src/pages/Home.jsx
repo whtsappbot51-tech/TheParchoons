@@ -128,11 +128,13 @@ const Home = () => {
           <h2 className="text-h2">Popular Near You</h2>
         </div>
         <div className="horizontal-scroll">
+          <div style={{ flex: '0 0 8px' }}></div>
           {displayBestSellers.map(product => (
             <div className="product-scroll-item" key={product._id}>
               <ProductCard product={product} />
             </div>
           ))}
+          <div style={{ flex: '0 0 8px' }}></div>
         </div>
       </section>
 
@@ -142,11 +144,13 @@ const Home = () => {
             <h2 className="text-h2">Today's Offers 🔥</h2>
           </div>
           <div className="horizontal-scroll">
+            <div style={{ flex: '0 0 8px' }}></div>
             {todaysOffers.map(product => (
               <div className="product-scroll-item" key={product._id}>
                 <ProductCard product={product} />
               </div>
             ))}
+            <div style={{ flex: '0 0 8px' }}></div>
           </div>
         </section>
       )}

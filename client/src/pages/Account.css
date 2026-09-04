@@ -62,7 +62,8 @@
 /* ===== Store Info ===== */
 .store-info-card {
   padding: var(--spacing-5);
-  background: linear-gradient(135deg, var(--bg-card), var(--primary-light));
+  background: var(--bg-card);
   border-radius: var(--radius-lg);
   border: 1px dashed var(--border-color);
+  box-shadow: var(--shadow-sm);
 }

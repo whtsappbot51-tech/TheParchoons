@@ -8,13 +8,13 @@ const clearDb = async () => {
   try {
     await mongoose.connect(config.mongoUri);
     console.log('✅ Connected to MongoDB');
-    
+
     const productCount = await Product.deleteMany({});
     console.log(`✅ Deleted ${productCount.deletedCount} products`);
-    
+
     const catCount = await Category.deleteMany({});
     console.log(`✅ Deleted ${catCount.deletedCount} categories`);
-    
+
     process.exit(0);
   } catch (err) {
     console.error('❌ Error clearing DB:', err);

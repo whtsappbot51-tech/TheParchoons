@@ -70,12 +70,33 @@ const Products = () => {
     setIsFormOpen(true);
   };
 
-  const handleFormSuccess = (savedProduct, isEdit) => {
-    setIsFormOpen(false);
+  const handleFormSuccess = (optimisticProduct, isEdit, uploadPromise) => {
+    setIsFormOpen(false); // Instantly close the modal!
+
+    // 1. Immediately update the UI with the optimistic product
     if (isEdit) {
-      setProducts(prev => prev.map(p => p._id === savedProduct._id ? savedProduct : p));
+      setProducts(prev => prev.map(p => p._id === optimisticProduct._id ? optimisticProduct : p));
     } else {
-      // Refresh current page to show new product
+      // Add to top of list
+      setProducts(prev => [optimisticProduct, ...prev]);
+    }
+
+    // 2. Wait for the real background upload to finish
+    if (uploadPromise) {
+      uploadPromise.then((savedProduct) => {
+        // Replace the temporary product with the real one from the database
+        setProducts(prev => {
+          if (isEdit) {
+            return prev.map(p => p._id === savedProduct._id ? savedProduct : p);
+          } else {
+            return prev.map(p => p._id === optimisticProduct._id ? savedProduct : p);
+          }
+        });
+      }).catch(err => {
+        alert("Failed to save product in background: " + err.message);
+        fetchProducts(); // Refresh the list to fix the broken state
+      });
+    } else {
       fetchProducts();
     }
   };

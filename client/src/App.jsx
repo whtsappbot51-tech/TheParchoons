@@ -16,15 +16,19 @@ import Account from './pages/Account';
 import Search from './pages/Search';
 import PromoPopup from './components/promo/PromoPopup';
 import MarqueeBanner from './components/promo/MarqueeBanner';
+import StoreClosedOverlay from './components/StoreClosedOverlay';
+import MaintenanceOverlay from './components/MaintenanceOverlay';
 
 function App() {
   return (
     <AppProvider>
       <BrowserRouter>
         <div className="app-container">
+          <MaintenanceOverlay />
           <Header />
           <MarqueeBanner />
           <PromoPopup />
+          <StoreClosedOverlay />
           <main className="page-content">
             <Routes>
               <Route path="/" element={<Home />} />

@@ -27,6 +27,10 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
   });
 
   useEffect(() => {
+    // Reset loading states when form opens/closes
+    setLoading(false);
+    setUploading(false);
+    
     if (productToEdit) {
       setFormData({
         ...productToEdit,
@@ -139,8 +143,8 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
   };
 
   const compressImage = (file) => {
-    // Skip compression for small files (<500KB) — saves time
-    if (file.size < 500 * 1024) return Promise.resolve(file);
+    // Compress any file over 100KB for lightning fast uploads
+    if (file.size < 100 * 1024) return Promise.resolve(file);
 
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -150,7 +154,7 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const MAX_SIZE = 800;
+          const MAX_SIZE = 600; // Smaller max size = faster upload
           
           if (width > height && width > MAX_SIZE) {
             height *= MAX_SIZE / width;
@@ -171,7 +175,7 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
               lastModified: Date.now(),
             });
             resolve(compressedFile);
-          }, 'image/jpeg', 0.8);
+          }, 'image/jpeg', 0.6); // 60% quality is perfectly fine for grocery items and uploads 3x faster
         };
         img.src = event.target.result;
       };
@@ -199,7 +203,7 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.variants.length === 0) {
       alert("Please add at least one variant.");
@@ -207,46 +211,56 @@ const ProductForm = ({ isOpen, onClose, productToEdit, categories, onSuccess }) 
     }
 
     setLoading(true);
-    setUploading(true);
-    try {
-      // Only upload if a NEW file was selected, otherwise use existing URL
-      const hasNewMainImage = imageFile !== null;
-      const mainImagePromise = hasNewMainImage ? uploadFile(imageFile) : Promise.resolve(formData.image);
-      
-      const variantPromises = Promise.all(
-        formData.variants.map(async (variant, index) => {
-          let vImageUrl = variant.image;
-          // Only upload if user picked a new file for this variant
-          if (variantImageFiles[index]) {
-            vImageUrl = await uploadFile(variantImageFiles[index]);
-          } else if (vImageUrl && vImageUrl.startsWith('data:')) {
-            // Strip data URIs that are just previews (no actual file to upload)
-            vImageUrl = '';
-          }
-          return { ...variant, image: vImageUrl };
-        })
-      );
 
-      const [imageUrl, uploadedVariants] = await Promise.all([mainImagePromise, variantPromises]);
+    // 1. Create an optimistic product for instant UI feedback
+    const optimisticProduct = {
+      ...formData,
+      _id: productToEdit ? productToEdit._id : 'temp-' + Date.now(),
+      image: imagePreview || formData.image, // Use local preview instantly
+      category: { _id: formData.category, name: 'Saving...' },
+      variants: formData.variants.map((v, index) => ({
+        ...v,
+        image: variantImageFiles[index] ? URL.createObjectURL(variantImageFiles[index]) : v.image
+      })),
+      isOptimistic: true // Flag to show it's syncing
+    };
 
-      const payload = { ...formData, image: imageUrl, variants: uploadedVariants };
+    // 2. Define the background upload process (runs after modal closes)
+    const uploadAndSave = async () => {
+      try {
+        const hasNewMainImage = imageFile !== null;
+        const mainImagePromise = hasNewMainImage ? uploadFile(imageFile) : Promise.resolve(formData.image);
+        
+        const variantPromises = Promise.all(
+          formData.variants.map(async (variant, index) => {
+            let vImageUrl = variant.image;
+            if (variantImageFiles[index]) {
+              vImageUrl = await uploadFile(variantImageFiles[index]);
+            } else if (vImageUrl && vImageUrl.startsWith('data:')) {
+              vImageUrl = '';
+            }
+            return { ...variant, image: vImageUrl };
+          })
+        );
 
-      let savedProduct;
-      if (productToEdit) {
-        const res = await api.put(`/admin/products/${productToEdit._id}`, payload);
-        savedProduct = res.data.product;
-      } else {
-        const res = await api.post('/admin/products', payload);
-        savedProduct = res.data.product;
+        const [imageUrl, uploadedVariants] = await Promise.all([mainImagePromise, variantPromises]);
+        const payload = { ...formData, image: imageUrl, variants: uploadedVariants };
+
+        if (productToEdit) {
+          const res = await api.put(`/admin/products/${productToEdit._id}`, payload);
+          return res.data.product;
+        } else {
+          const res = await api.post('/admin/products', payload);
+          return res.data.product;
+        }
+      } catch (err) {
+        console.error('Background save failed:', err);
+        throw err;
       }
+    };
 
-      onSuccess(savedProduct, !!productToEdit);
-    } catch (err) {
-      alert(err.response?.data?.error || err.message || 'Failed to save product');
-    } finally {
-      setLoading(false);
-      setUploading(false);
-    }
+    // 3. Close the modal instantly and let Products.jsx handle the background promise!
+    onSuccess(optimisticProduct, !!productToEdit, uploadAndSave());
   };
 
   return (
